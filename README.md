@@ -3,6 +3,10 @@
 <p align="center"><b>Run a 180-billion-parameter AI model on one 16 GB NVIDIA graphics card</b><br>
 Linux · 64 GB of RAM · free for personal use</p>
 
+<p align="center"><sub><b>Quant:</b> mixed precision per expert (the experts the model uses most keep more bits): about 2.7 bits on the experts
+in precise mode (the default), 2.1 in fast mode; attention and the rest at 4–5 bit; KV cache full bf16.
+GSM8K 148/150, MMLU-Pro 124/150 (<a href="results/v0.1.0">every question logged</a>).</sub></p>
+
 <p align="center"><a href="examples/star-drift"><img src="docs/media/star-drift.gif" width="720" alt="Star Drift, a space shooter the model wrote in one prompt, playing itself"></a><br>
 <sub>A space shooter written in one prompt by the model on an RTX 4080 SUPER, unedited ·
 <a href="examples/star-drift">the prompt, the file and how often it works</a></sub></p>
