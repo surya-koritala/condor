@@ -42,7 +42,7 @@ The logs: [results/v0.1.0](results/v0.1.0).
 | **Graphics card** | NVIDIA GeForce RTX 30, 40 or 50 series, or a workstation card from the same generations (Ampere or newer), with **16 GB of VRAM or more** and driver 580 or newer. |
 | **RAM** | 64 GB. |
 | **Disk** | About 90 GB free (75 GB for fast mode). An SSD makes the first start much faster. |
-| **System** | Linux on x86-64 (tested on Ubuntu 24.04). Windows is not supported yet. |
+| **System** | Linux on x86-64: Ubuntu 22.04 or newer, or another distribution from 2022 on (tested on Ubuntu 22.04 and 24.04). Windows is not supported yet. |
 
 ## Install
 
@@ -94,7 +94,7 @@ app in your browser at `http://127.0.0.1:8080`. Press Enter for the recommended 
 ## Something went wrong?
 
 - **It stopped while downloading.** Run `./setup.sh` again. It continues where it stopped.
-- **"No NVIDIA driver found" or "the driver is older than 580".** Install or update the NVIDIA driver, then run it again.
+- **"No NVIDIA driver found" or "580 or newer is needed".** Install or update the NVIDIA driver (on Ubuntu: `sudo apt install nvidia-driver-595`), reboot, then run it again.
 - **It's very slow and the disk is busy.** Your PC doesn't have enough free RAM. Close other programs (browsers use a lot).
 - **Port 8080 is already in use.** It's probably already running. Or start it on another port: `tools/serve.sh 8090`.
 

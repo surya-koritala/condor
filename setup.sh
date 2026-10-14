@@ -14,7 +14,7 @@ RAM=$(free -g | awk '/^Mem:/ {print $2}'); DISK=$(df -BG --output=avail "$HOME" 
 echo "  GPU ${GPU//_/ }, $(((VRAM + 512) / 1024)) GB, driver $DRV;  RAM $RAM GiB;  free disk $DISK GB"
 [ "$VRAM" -ge 15000 ] || echo "  Note: the GPU has less than 16 GB; this is tested on 16 GB and up."
 [ "$RAM" -ge 60 ] || echo "  Note: less than 64 GB of RAM; expect slower answers while the model's files come from the disk."
-[ "${DRV%%.*}" -ge 580 ] || { echo "  The driver is older than 580: update it, then run this again."; exit 1; }
+[ "${DRV%%.*}" -ge 580 ] || { echo "  The NVIDIA driver is $DRV; 580 or newer is needed. On Ubuntu: sudo apt install nvidia-driver-595 (or sudo ubuntu-drivers install), reboot, then run this again."; exit 1; }
 
 [ -x "$H/bin/glyd-engine" ] || { say "Installing the engine (about 50 MB)"; bash "$HERE/tools/install.sh"; }
 . "$H/env.sh"
