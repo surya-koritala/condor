@@ -7,36 +7,31 @@ Linux · 64 GB of RAM · free for personal use</p>
 <sub>A space shooter written in one prompt by the model on an RTX 4080 SUPER, unedited ·
 <a href="examples/star-drift">the prompt, the file and how often it works</a></sub></p>
 
-<p align="center"><img src="docs/media/chat.gif" width="720" alt="The chat app writing an answer in real time"><br>
-<sub>The chat app, in real time</sub></p>
-
 This runs **[Qwen3.8-Flash-Next](https://huggingface.co/Qwen/Qwen3.8-Flash-Next)** on a normal PC with [Glyd](https://getglyd.com)'s own
 engine. It's a large, smart AI model that usually needs a server. It chats, writes code and works with your apps and coding agents.
 Nothing leaves your PC.
 
 ## How fast is it?
 
-Measured on one PC: an RTX 4080 SUPER (16 GB), a Ryzen 9 7950X3D and 64 GB of RAM. [Strata](https://github.com/Niko1221/Strata), the
-most popular engine for this model, ran on the same PC with the same prompts. A token is about ¾ of a word.
+Measured on one PC: an RTX 4080 SUPER (16 GB), a Ryzen 9 7950X3D and 64 GB of RAM. A token is about ¾ of a word.
 
-| | Glyd precise | Glyd fast | Strata Q2_0 | Strata IQ3_XXS |
-| --- | ---: | ---: | ---: | ---: |
-| **Writes answers** (Strata's speed prompt) | 145 tokens/s | **169–173 tokens/s** | 161–165 | 125–140 |
-| **Writes answers** in a chat (the default settings) | 117 tokens/s | 135 tokens/s | | |
-| **Reads your prompt** (32,000 tokens) | | **7.2 s** | 9.6 s | |
-| **Writes after that long prompt** | | **135 tokens/s** | 129.5 | |
+| | Precise | Fast |
+| --- | ---: | ---: |
+| **Writes answers** in a chat (the default settings) | 117 tokens/s | 135 tokens/s |
+| **Writes answers**, top speed (a short prompt, greedy) | 145 tokens/s | 169–173 tokens/s |
+| **Reads your prompt** (32,000 tokens) | about 7 s | about 7 s |
 
-Both modes read prompts at the same speed (a 25,852-token prompt: 6.5 s precise, 6.4 s fast). Run `tools/bench.sh` to measure your PC.
+Run `tools/bench.sh` to measure your PC.
 
 ## How smart is it?
 
-The same questions for both engines (Inspect AI, 150 GSM8K and 150 MMLU-Pro questions, thinking off):
+Inspect AI, 150 GSM8K and 150 MMLU-Pro questions, thinking off:
 
-| | Glyd precise | Glyd fast | Strata Q2_0 | Strata IQ3_XXS |
-| --- | ---: | ---: | ---: | ---: |
-| **GSM8K** (school math) | **148** | **148** | **148** | 147 |
-| **MMLU-Pro** (hard knowledge questions) | 124 | 118 | not finished | **126** |
-| **A full game in one prompt** ([Star Drift](examples/star-drift)) | 3 of 6 playable | 1 of 6 | | |
+| | Precise | Fast |
+| --- | ---: | ---: |
+| **GSM8K** (school math) | 148 of 150 | 148 of 150 |
+| **MMLU-Pro** (hard knowledge questions) | 124 of 150 | 118 of 150 |
+| **A full game in one prompt** ([Star Drift](examples/star-drift)) | 3 of 6 playable | 1 of 6 |
 
 The logs: [results/v0.1.0](results/v0.1.0).
 

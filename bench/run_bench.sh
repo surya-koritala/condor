@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The quality benchmarks behind the README's numbers: GSM8K 150 and MMLU-Pro 150 (the same 150 + 150 questions as the Strata comparison: Inspect AI's tasks
+# The quality benchmarks behind the README's numbers: GSM8K 150 and MMLU-Pro 150 (Inspect AI's tasks
 # as shipped, every second question, the first 150), greedy, thinking off, a 3,072-token cap; against a server from tools/serve.sh.
 #   bench/run_bench.sh [BASE_URL] [OUT]       (defaults http://127.0.0.1:8080/v1 and ./bench-out)
 set -euo pipefail
