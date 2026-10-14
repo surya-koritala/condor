@@ -160,7 +160,7 @@
           <label>Thinking<select id="s-think"><option value="off">Off: answer right away</option><option value="low">Brief</option><option value="medium">Medium</option><option value="xhigh">Thorough</option></select></label>
           <label>Temperature<input id="s-temp" type="number" min="0" max="2" step="0.1" placeholder="model's 1.0"></label>
           <label>Top-p<input id="s-topp" type="number" min="0" max="1" step="0.05" placeholder="model's 0.95"></label>
-          <label>Longest answer<input id="s-max" type="number" min="16" max="262144" step="64" value="16384"></label>
+          <label>Longest answer<input id="s-max" type="number" min="16" max="262144" step="64" placeholder="no limit"></label>
           <label>Instructions for every chat<textarea id="s-sys" placeholder="e.g. Answer briefly. Use British spelling."></textarea></label>
         </div>
         <div class="box">
@@ -286,7 +286,7 @@ function render() {
 }
 $("new").onclick = () => { if (busy) return; cur = null; save(); render(); $("q").focus(); };
 /* settings */
-const S = Object.assign({ think: "off", temp: "", topp: "", max: 16384, sys: "" }, store.get("hb-settings", {}));
+const S = Object.assign({ think: "off", temp: "", topp: "", max: "", sys: "" }, store.get("hb-settings", {}));
 for (const [id, k] of [["s-think", "think"], ["s-temp", "temp"], ["s-topp", "topp"], ["s-max", "max"], ["s-sys", "sys"]]) { $(id).value = S[k]; $(id).oninput = () => { S[k] = $(id).value; store.set("hb-settings", S); syncThink(); }; }
 const syncThink = () => $("b-think").classList.toggle("on", S.think !== "off"); syncThink();
 $("b-think").onclick = () => { S.think = S.think === "off" ? "medium" : "off"; $("s-think").value = S.think; store.set("hb-settings", S); syncThink(); };
@@ -312,8 +312,8 @@ async function send(given) {
   const m = { role: "assistant", content: "", reasoning: "", stats: {} }, el = botEl(m, null); $("msgs").appendChild(el);
   const body = el.querySelector(".md"); body.classList.add("typing");
   const history = [{ role: "system", content: RENDERS + (S.sys ? "\n\n" + S.sys : "") }, ...c.messages.map(x => ({ role: x.role, content: x.content }))];
-  const req = { messages: history, stream: true, max_tokens: +S.max || 16384, stream_options: { include_usage: true }, chat_template_kwargs: { enable_thinking: S.think !== "off" } };
-  if (S.think !== "off") req.reasoning_effort = S.think; if (S.temp !== "") req.temperature = +S.temp; if (S.topp !== "") req.top_p = +S.topp;
+  const req = { messages: history, stream: true, stream_options: { include_usage: true }, chat_template_kwargs: { enable_thinking: S.think !== "off" } };
+  if (+S.max) req.max_tokens = +S.max; if (S.think !== "off") req.reasoning_effort = S.think; if (S.temp !== "") req.temperature = +S.temp; if (S.topp !== "") req.top_p = +S.topp;
   busy = new AbortController(); $("go").innerHTML = STOP; $("go").classList.add("stop"); $("go").title = "Stop";
   const t0 = performance.now(); let tFirst = 0, frame = 0;
   const paint = () => { frame = 0; body.innerHTML = md(m.content); const th = el.querySelector(".think .tx"); if (th) th.textContent = m.reasoning; $("log").scrollTop = $("log").scrollHeight; };
@@ -369,8 +369,8 @@ async function poll() {
     ["Experts found on the GPU", st.cache_hits != null ? st.cache_hits + "%" : "–"], ["Guesses kept", st.guesses ? Math.round(100 * st.guesses_right / st.guesses) + "%" : "–"],
     ["Tokens a step", st.tokens_a_pass ?? "–"], ["Last prompt", st.prompt_tokens ? `${fmt(st.prompt_tokens)} tokens in ${(st.prompt_ms / 1000).toFixed(2)} s` : "–"]]
     .map(([k, v]) => `<span>${k}</span><span>${esc(String(v))}</span>`).join("");
-  $("m-req").innerHTML = (s.requests || []).map(r => r.status === "error" ? `<tr><td>${r.time}</td><td colspan="7" style="color:var(--bad)">${esc(r.error || "error")}</td></tr>` :
-    `<tr><td>${r.time}</td><td class="n">${fmt(r.prompt)}</td><td class="n">${fmt(r.reused)}</td><td class="n">${fmt(r.output)}</td><td class="n">${r.prompt_s ?? "–"} s</td><td class="n">${fmt(r.tok_s)}</td><td class="n">${r.guesses != null ? r.guesses + "%" : "–"}</td><td class="n">${r.seconds} s</td></tr>`).join("") || `<tr><td colspan="8" class="sub">No requests yet</td></tr>`;
+  $("m-req").innerHTML = (s.requests || []).map(r => r.status === "error" ? `<tr><td>${new Date(r.t * 1000).toLocaleTimeString()}</td><td colspan="7" style="color:var(--bad)">${esc(r.error || "error")}</td></tr>` :
+    `<tr><td>${new Date(r.t * 1000).toLocaleTimeString()}</td><td class="n">${fmt(r.prompt)}</td><td class="n">${fmt(r.reused)}</td><td class="n">${fmt(r.output)}</td><td class="n">${r.prompt_s ?? "–"} s</td><td class="n">${fmt(r.tok_s)}</td><td class="n">${r.guesses != null ? r.guesses + "%" : "–"}</td><td class="n">${r.seconds} s</td></tr>`).join("") || `<tr><td colspan="8" class="sub">No requests yet</td></tr>`;
 }
 poll(); setInterval(poll, 1000);
 </script>

@@ -1,2 +1,0 @@
-arm1 [] humaneval {'accuracy': 0.9512, 'stderr': 0.0169} 164 | 6.25 ms a token over 165
-HE-DONE

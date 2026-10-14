@@ -1,7 +1,7 @@
 glyd-qwen-3.8-flash
 Copyright 2026 Surya Koritala
 
-This repository (scripts, server shim, benchmarks, results and documentation) is under the Apache License 2.0: see LICENSE.
+This repository (the setup scripts, the chat app, the benchmarks, the results and the documentation) is under the Apache License 2.0: see LICENSE.
 
 The Glyd engine itself is not in this repository. It is released in compiled form only, as assets of this repository's GitHub releases
 (the glyd-engine program and the libglyd_gpu library), under the Business Source License 1.1: see ENGINE-LICENSE. It is free for personal

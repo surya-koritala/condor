@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""A slice of the Strata record's question set, run the way eval_run.py runs it (Inspect AI gsm8k / mmlu_pro from inspect_evals, as they ship, non-thinking, temperature 0, at most 3,072 new tokens, max_connections 8):
-the set is `dataset[i-1::n][:LIMIT]` (shard 1/2, LIMIT 150: the 150 questions of benchmarks/cards/2026-10-10 and the Strata runs, the same Inspect sample ids), and the slice is its questions START..END-1.
+"""A slice of the quality benchmark: Inspect AI's gsm8k or mmlu_pro tasks as they ship, thinking off, temperature 0, at most 3,072 new tokens, 8 requests at a time.
+The question set is every second question, the first LIMIT of them (`dataset[i-1::n][:LIMIT]`, shard 1/2, LIMIT 150), and the slice is its questions START..END-1.
     eval_slice.py BASE_URL MODEL TASK(gsm8k|mmlu_pro) SHARD(i/n) LIMIT START END OUTDIR
-Writes OUTDIR/evals.json (one row, the slice's accuracy, n, and the range) and Inspect's log in OUTDIR/logs; merge_slices.py combines slices."""
+Writes OUTDIR/evals.json (the slice's accuracy) and Inspect's log in OUTDIR/logs; merge_slices.py combines the slices."""
 import json
 import sys
 from importlib.metadata import version

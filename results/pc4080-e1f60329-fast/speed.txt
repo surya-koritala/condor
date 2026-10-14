@@ -1,1 +1,0 @@
-mean 7.10 ms a token over 305 replies

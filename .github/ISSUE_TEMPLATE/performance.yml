@@ -1,0 +1,16 @@
+name: Speed result or slow speed
+description: Share how fast it runs on your hardware, or report that it is slower than expected.
+labels: [performance]
+body:
+  - type: textarea
+    id: report
+    attributes:
+      label: bench-report.md
+      description: Run `tools/bench.sh` with the server running and paste the report here.
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: Mode (fast or precise), context size, other programs running.

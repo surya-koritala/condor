@@ -18,15 +18,14 @@ echo "  GPU ${GPU//_/ }, $(((VRAM + 512) / 1024)) GB, driver $DRV;  RAM $RAM GiB
 
 [ -x "$H/bin/glyd-engine" ] || { say "Installing the engine (about 50 MB)"; bash "$HERE/tools/install.sh"; }
 . "$H/env.sh"
-MODE=$(ask "Mode: fast (quickest) or precise (adds the precision pack: closer to the original model, about 45 GB more to download)" fast)
-if [ ! -f "$H/hf/model/config.json" ] || { [ "$MODE" = precise ] && [ ! -f "$H/hf/precise/meta.json" ]; }; then
-  [ "$DISK" -ge 75 ] || { echo "About 75 GB of free disk is needed (120 GB for precise mode)."; exit 1; }
-  say "Downloading the model (about 68 GB$([ "$MODE" = precise ] && echo ' + 45 GB'); it resumes if it stops)"
-  bash "$HERE/tools/download.sh" $([ "$MODE" = precise ] && echo --precise)
+MODE=$(ask "Mode: precise (recommended: the most accurate, best for code) or fast (quicker answers, a smaller download)" precise)
+case $MODE in precise) PART=precise; GB=82;; fast) PART=pack; GB=68;; *) echo "Answer precise or fast."; exit 1;; esac
+if [ ! -f "$H/hf/model/config.json" ] || [ ! -e "$H/hf/$PART" ]; then
+  [ "$DISK" -ge $((GB + 7)) ] || { echo "About $((GB + 7)) GB of free disk is needed for $MODE mode; $DISK GB is free."; exit 1; }
+  say "Downloading the model (about $GB GB; it resumes if it stops)"
+  bash "$HERE/tools/download.sh" $([ "$MODE" = fast ] && echo --fast)
 fi
 CTX=$(ask "Context (tokens the model keeps in mind): 32768 is fastest; 65536, 131072 or 262144 hold more, with less room for the model on the GPU" 32768)
 say "Starting: chat at http://127.0.0.1:8080/  ·  API at http://127.0.0.1:8080/v1 (OpenAI and Anthropic)  ·  Ctrl+C to stop"
-DIR=$H/hf; PACK=$DIR/pack; [ "$MODE" = precise ] && PACK=$DIR/precise
-( sleep 60; command -v xdg-open > /dev/null && xdg-open http://127.0.0.1:8080/ > /dev/null 2>&1 || true ) &
-exec python "$HERE/tools/server.py" --model "$DIR/model" --pack "$PACK" $([ "$MODE" = precise ] && echo --precise) \
-  --engine "$GLYD_ENGINE" --engine-args "--ctx $CTX" --port 8080
+( sleep 3; command -v xdg-open > /dev/null && xdg-open http://127.0.0.1:8080/ > /dev/null 2>&1 || true ) &
+GLYD_CTX=$CTX exec bash "$HERE/tools/serve.sh" $([ "$MODE" = fast ] && echo --fast) 8080

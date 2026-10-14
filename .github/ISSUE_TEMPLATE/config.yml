@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security problem
+    url: https://github.com/surya-koritala/glyd-qwen-3.8-flash/blob/main/SECURITY.md
+    about: Please report security problems privately.

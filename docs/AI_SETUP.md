@@ -16,11 +16,11 @@ uname -sm
 
 | Requirement | Needed |
 |---|---|
-| System | Linux on x86-64. On Windows, use WSL2 with the NVIDIA driver for WSL. |
+| System | Linux on x86-64 (tested on Ubuntu 24.04). Windows, including WSL2, is not supported yet. |
 | GPU | NVIDIA, Ampere or newer (RTX 30, 40 or 50 series, A-series, H100), 16 GB or more |
 | Driver | 580 or newer |
 | RAM | 64 GB |
-| Disk | about 75 GB free (120 GB for precise mode too) |
+| Disk | about 90 GB free (75 GB for fast mode) |
 
 If something is short, stop and tell the user which requirement, and by how much.
 
@@ -28,9 +28,8 @@ If something is short, stop and tell the user which requirement, and by how much
 
 ```sh
 git clone https://github.com/surya-koritala/glyd-qwen-3.8-flash && cd glyd-qwen-3.8-flash
-tools/install.sh                  # the compiled engine and a small Python venv under ~/.glyd-qwen-3.8-flash; no sudo
-. ~/.glyd-qwen-3.8-flash/env.sh
-tools/download.sh                 # about 68 GB; add --precise for precise mode (the precision pack, about 45 GB more)
+tools/install.sh                  # the compiled engine under ~/.glyd-qwen-3.8-flash; no sudo, nothing else to install
+tools/download.sh                 # precise mode (recommended), about 82 GB; --fast for fast mode, about 68 GB
 ```
 
 The download resumes if it stops: run it again.
@@ -38,10 +37,10 @@ The download resumes if it stops: run it again.
 ## 3. Start it
 
 ```sh
-tools/serve.sh                    # fast mode; tools/serve.sh --precise for precise mode
+tools/serve.sh                    # precise mode; tools/serve.sh --fast for fast mode
 ```
 
-Loading takes about a minute. Then:
+The page opens at once and says when the model is loaded (about a minute). Then:
 
 - the chat page is at http://127.0.0.1:8080/;
 - the OpenAI-compatible API is at http://127.0.0.1:8080/v1, model `qwen3.8-flash-next`, any API key;
@@ -58,8 +57,9 @@ curl -s http://127.0.0.1:8080/v1/chat/completions -H 'Content-Type: application/
 
 - **Any OpenAI-compatible app** (Open WebUI, Continue, Cline, LibreChat): base URL `http://127.0.0.1:8080/v1`, model `qwen3.8-flash-next`.
 - **Anthropic-compatible tools:** base URL `http://127.0.0.1:8080`.
-- **MCP:** `claude mcp add glyd -- python3 "$PWD/tools/mcp_server.py"` gives an AI tool `glyd_start`, `_stop`, `_status` and `_ask`.
+- **Claude Code:** `ANTHROPIC_BASE_URL=http://127.0.0.1:8080 claude`.
+- **MCP:** `claude mcp add glyd -- ~/.glyd-qwen-3.8-flash/bin/glyd-engine qwenmcp --repo "$PWD"` gives an AI tool `glyd_start`, `_stop`, `_status` and `_ask`.
 
 ## 5. Measure it
 
-`tools/bench.py` takes about 5 minutes. It measures a chat and 4K, 16K and 32K prompts, and writes `bench-report.md` for the user.
+`tools/bench.sh` takes about 5 minutes, with the server running. It measures a chat and 4K, 16K and 32K prompts, and writes `bench-report.md` for the user.
