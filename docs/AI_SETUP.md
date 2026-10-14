@@ -20,7 +20,7 @@ uname -sm
 | GPU | NVIDIA, Ampere or newer (RTX 30, 40 or 50 series, A-series, H100), 16 GB or more |
 | Driver | 580 or newer |
 | RAM | 64 GB |
-| Disk | about 75 GB free (110 GB for precise mode too) |
+| Disk | about 75 GB free (120 GB for precise mode too) |
 
 If something is short, stop and tell the user which requirement, and by how much.
 
@@ -30,7 +30,7 @@ If something is short, stop and tell the user which requirement, and by how much
 git clone https://github.com/surya-koritala/glyd-qwen-3.8-flash && cd glyd-qwen-3.8-flash
 tools/install.sh                  # the compiled engine and a small Python venv under ~/.glyd-qwen-3.8-flash; no sudo
 . ~/.glyd-qwen-3.8-flash/env.sh
-tools/download.sh                 # about 68 GB; add --precise for precise mode (the precision pack, about 41 GB more)
+tools/download.sh                 # about 68 GB; add --precise for precise mode (the precision pack, about 45 GB more)
 ```
 
 The download resumes if it stops: run it again.

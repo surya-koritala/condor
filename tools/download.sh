@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Glyd's build of Qwen3.8-Flash-Next from Hugging Face (no token needed): the model (Qwen's tokenizer, configs and the weights the engine keeps
 # outside its experts) and the experts' pack. One Hugging Face repo, glyd/Qwen3.8-Flash-Next-hummingbird: model/ and pack/ (about 68 GB, fast mode);
-# --precise adds its precise/ folder, the precision pack (about 41 GB).
+# --precise adds its precise/ folder, the precision pack (about 45 GB).
 #   tools/download.sh [--precise] [DIR]        (default DIR $GLYD_QWEN/hf)
 set -euo pipefail
 . "${GLYD_QWEN:-$HOME/.glyd-qwen-3.8-flash}/env.sh"

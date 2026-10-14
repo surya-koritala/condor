@@ -52,15 +52,15 @@ matches Strata's best within a question. Every log is in [results/](results/) (t
 Both are Hummingbird: about 2.1 bits per weight for fast and 2.7 for precise, on the experts.
 
 - **Fast** (the default) uses Glyd's smallest expert format, so more experts fit in GPU memory.
-- **Precise** (`tools/serve.sh --precise`) adds the precision pack, an optional 41 GB download that keeps more bits where they matter. It is about 4× closer to the original model: KL
+- **Precise** (`tools/serve.sh --precise`) adds the precision pack, an optional 45 GB download that keeps more bits where they matter. It is about 4× closer to the original model: KL
   divergence on a 5,923-token document is 0.06, against 0.22 for fast mode.
 
 ## How it works
 
 - **Experts where they are used.** The busiest experts stay in GPU memory and the rest in RAM. The CPU computes the experts that
   aren't on the GPU, and after a long prompt the GPU's cache refills before writing starts.
-- **Compression by usage.** Glyd compresses the experts to 2 to 4 bits, with more bits where routing goes most: 336 GB of weights
-  become a 39 GB pack.
+- **Compression by usage.** Glyd compresses the experts to 2 to 4 bits, with more bits where routing goes most: the experts' 242 GB of bf16 weights
+  become a 31 GB pack.
 - **Guess, then check.** The model's own prediction head drafts up to six tokens while it stays confident, and one pass checks them all.
 - **Long prompts layer by layer.** A 32K prompt streams through the model one layer at a time, on tensor-core kernels.
 
@@ -69,7 +69,7 @@ Both are Hummingbird: about 2.1 bits per weight for fast and 2.7 for precise, on
 You need:
 - Linux on x86-64 (Windows through WSL2), and an NVIDIA GPU with 16 GB or more (Ampere, Ada, Hopper or Blackwell), driver 580 or newer;
 - 64 GB of RAM;
-- about 75 GB of free disk (110 GB to add precise mode).
+- about 75 GB of free disk (120 GB to add precise mode).
 
 ```sh
 git clone https://github.com/surya-koritala/glyd-qwen-3.8-flash && cd glyd-qwen-3.8-flash

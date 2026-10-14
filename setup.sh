@@ -18,10 +18,10 @@ echo "  GPU ${GPU//_/ }, $(((VRAM + 512) / 1024)) GB, driver $DRV;  RAM $RAM GiB
 
 [ -x "$H/bin/glyd-engine" ] || { say "Installing the engine (about 50 MB)"; bash "$HERE/tools/install.sh"; }
 . "$H/env.sh"
-MODE=$(ask "Mode: fast (quickest) or precise (adds the precision pack: closer to the original model, about 41 GB more to download)" fast)
+MODE=$(ask "Mode: fast (quickest) or precise (adds the precision pack: closer to the original model, about 45 GB more to download)" fast)
 if [ ! -f "$H/hf/model/config.json" ] || { [ "$MODE" = precise ] && [ ! -f "$H/hf/precise/meta.json" ]; }; then
-  [ "$DISK" -ge 75 ] || { echo "About 75 GB of free disk is needed (110 GB for precise mode)."; exit 1; }
-  say "Downloading the model (about 68 GB$([ "$MODE" = precise ] && echo ' + 41 GB'); it resumes if it stops)"
+  [ "$DISK" -ge 75 ] || { echo "About 75 GB of free disk is needed (120 GB for precise mode)."; exit 1; }
+  say "Downloading the model (about 68 GB$([ "$MODE" = precise ] && echo ' + 45 GB'); it resumes if it stops)"
   bash "$HERE/tools/download.sh" $([ "$MODE" = precise ] && echo --precise)
 fi
 CTX=$(ask "Context (tokens the model keeps in mind): 32768 is fastest; 65536, 131072 or 262144 hold more, with less room for the model on the GPU" 32768)
