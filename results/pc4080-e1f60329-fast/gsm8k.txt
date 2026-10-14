@@ -1,0 +1,1 @@
+gsm8k: 149 / 150 correct (99.3%), 0 hit the 3,072-token cap, mean 156.4 output tokens, 15.7 s a question, 6 slices

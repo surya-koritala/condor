@@ -1,0 +1,13 @@
+02:41:38 gsm8k 0-25 "value": 1.0
+02:42:36 gsm8k 25-50 "value": 1.0
+02:43:35 gsm8k 50-75 "value": 1.0
+02:46:58 gsm8k 75-100 "value": 1.0
+02:47:59 gsm8k 100-125 "value": 0.96
+02:48:59 gsm8k 125-150 "value": 1.0
+02:54:53 mmlu_pro 0-25 "value": 0.88
+02:58:28 mmlu_pro 25-50 "value": 0.8
+03:02:38 mmlu_pro 50-75 "value": 0.92
+03:05:36 mmlu_pro 75-100 "value": 0.76
+03:11:39 mmlu_pro 100-125 "value": 0.76
+03:14:15 mmlu_pro 125-150 "value": 0.8
+FULL-DONE

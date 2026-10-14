@@ -1,0 +1,12 @@
+glyd-qwen-3.8-flash
+Copyright 2026 Surya Koritala
+
+This repository (scripts, server shim, benchmarks, results and documentation) is under the Apache License 2.0: see LICENSE.
+
+The Glyd engine itself is not in this repository. It is released in compiled form only, as assets of this repository's GitHub releases
+(the glyd-engine program and the libglyd_gpu library), under the Business Source License 1.1: see ENGINE-LICENSE. It is free for personal
+and other non-commercial use, including research and production on computers you own or rent for yourself. Commercial production use
+needs a license (suryakoritala@getglyd.com). Each version becomes Apache-2.0 four years after its first public release.
+
+The packed weights on Hugging Face are derived from Qwen3.8-Flash-Next and carry the base model's license. Neither they nor the original
+checkpoint are in this repository.

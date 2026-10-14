@@ -1,0 +1,1 @@
+mmlu_pro: 123 / 150 correct (82.0%), 18 hit the 3,072-token cap, mean 1187.4 output tokens, 50.4 s a question, 6 slices
