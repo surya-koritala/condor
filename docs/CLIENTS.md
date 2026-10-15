@@ -11,7 +11,7 @@ API key                any
 
 If you started it on another port (`tools/serve.sh 8090`), change the port.
 
-TODO(owner): say which address it listens on, and how to reach it from another machine or a Docker container if that's supported.
+It listens on 127.0.0.1 only, so it's reachable from the same machine. Reaching it from another machine or a container isn't set up yet.
 
 ## Generic setup
 
@@ -53,14 +53,19 @@ You can run it yourself: `python3 tests/test_server.py --url http://127.0.0.1:80
 
 ## Not tested yet
 
-- TODO(owner): test tool calls while streaming (`"stream": true` with `tools`), OpenAI and Anthropic.
-- TODO(owner): test more than one tool call in a single answer (parallel tool calls).
-- TODO(owner): test `tool_choice` (`"required"`, `"none"`, a named function) and the Anthropic equivalent.
-- TODO(owner): test long agent loops (many tool round trips in one conversation).
-- TODO(owner): test tool calls with thinking on (`reasoning_effort`).
-- TODO(owner): test `response_format` / JSON mode.
-- TODO(owner): test whether `GET /v1/models` exists; some apps call it to fill their model list.
-- TODO(owner): test Open WebUI, Hermes, Continue, Cline and LibreChat end to end and add a short note for each.
+I haven't checked these, so they may or may not work:
+
+- tool calls while streaming (`"stream": true` with `tools`), OpenAI and Anthropic
+- more than one tool call in a single answer
+- `tool_choice` (`"required"`, `"none"`, a named function) and the Anthropic equivalent
+- long agent loops (many tool round trips in one conversation)
+- tool calls with thinking on
+- `response_format` / JSON mode
+- `GET /v1/models` (some apps call it to fill their model list)
+- Open WebUI, Hermes, Continue, Cline and LibreChat end to end
+
+If you try one, tell me how it went in an issue. This list is tracked in
+[#10](https://github.com/surya-koritala/glyd-qwen-3.8-flash/issues/10).
 
 ## Things that will trip up agent frameworks
 
