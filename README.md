@@ -83,6 +83,7 @@ To switch: `tools/download.sh --fast` then `tools/serve.sh --fast` (drop `--fast
   GPU/CPU/RAM, and an About page.
 - OpenAI-compatible API: `http://127.0.0.1:8080/v1`, any key and any model name.
 - Anthropic-compatible API: `http://127.0.0.1:8080/v1/messages`, e.g. `ANTHROPIC_BASE_URL=http://127.0.0.1:8080 claude`.
+- Other apps and agent frameworks, and what's tested with tool calls: [docs/CLIENTS.md](docs/CLIENTS.md).
 - MCP: `claude mcp add glyd -- ~/.glyd-qwen-3.8-flash/bin/glyd-engine qwenmcp --repo /path/to/glyd-qwen-3.8-flash`
 - Thinking is off by default (fastest). Turn it on in chat settings or with `reasoning_effort`.
 - Context up to 262,144 tokens. Follow-up messages reuse the conversation, so they start in under a second.
