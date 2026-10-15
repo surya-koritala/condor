@@ -12,5 +12,5 @@ for task in gsm8k mmlu_pro; do
   for s in 0 25 50 75 100 125; do
     GLYD_API_KEY=none "$EV/bin/python" "$HERE/eval_slice.py" "$BASE" qwen3.8-flash-next $task 1/2 150 $s $((s + 25)) "$OUT/$task-$s"
   done
-  python3 "$HERE/merge_slices.py" "$OUT/$task.json" "$OUT/$task-"*
+  "$EV/bin/python" "$HERE/merge_slices.py" "$OUT/$task.json" "$OUT/$task-"*
 done
