@@ -19,6 +19,8 @@ engine. I went the other way and built the compression and the engine together, 
 - The model's own small draft head guesses a few tokens ahead and the big model checks them in one pass.
 - Long prompts go through the model one layer at a time, so a 32K prompt doesn't blow up memory.
 
+More detail: [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md).
+
 This is the first big model I'm releasing on it. The same engine runs other models (Nemotron, Qwen3.8-27B and more), and Gemma 4 is
 next.
 
