@@ -20,8 +20,8 @@ top 25%                              ~65%
 top 50%                              ~87%
 ```
 
-So the bits go where the use is. In precise mode, the busiest ~10% of experts in each layer keep 4 bits, the next ~40% get 3 bits, and
-the rest get 2 bits. Fast mode keeps every expert in the smallest format. On average:
+So the bits go where the use is. In precise mode, the busiest experts in each layer keep the most bits (4, 3 or 2 bits, from most used
+to least). Fast mode keeps every expert in the smallest format. On average:
 
 ```
                                      precise         fast
@@ -42,7 +42,7 @@ a 16 GB card roughly 70-76% of expert reads hit an expert that is already on the
 For the experts that miss, the CPU computes them from RAM while the GPU works on the rest of the layer, and the results are added
 together. A bigger context leaves less room for experts on the GPU, which is why 32K is the fastest setting.
 
-One shortcut: an expert that is not on the GPU, and that every token in the step ranks among its 3 smallest routing weights, is skipped.
+One shortcut: an expert that is not on the GPU and that gets only a tiny routing weight from every token in the step is skipped.
 Those experts add little to the output, and skipping them saves CPU time. This is an approximation and it does change
 the output a little. I measured it: GSM8K and the needle tests came out the same with and without it.
 
