@@ -16,7 +16,7 @@ engine. I went the other way and built the compression and the engine together, 
 - The engine knows which experts the model actually routes to. The busy ones live on the GPU, the rest stay in RAM, and the CPU computes
   those at the same time as the GPU works.
 - The experts are compressed by how often they get used. Busy experts keep more bits, rarely used ones get fewer.
-- The model's own small draft head guesses a few tokens ahead and the big model checks them in one pass.
+- The model's own small draft head guesses the next token and the big model checks it in the same pass (about 1.9 tokens per step).
 - Long prompts go through the model one layer at a time, so a 32K prompt doesn't blow up memory.
 
 More detail: [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md).
