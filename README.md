@@ -47,7 +47,7 @@ Benchmarks were run with thinking off and greedy decoding. GSM8K is mostly a san
 MMLU-Pro and the one-shot game tell you more. Every question, answer and log is in [results/v0.1.0](results/v0.1.0), and the scripts
 are in [bench/](bench). Also tested on a cloud A10 (24 GB): `results/v0.1.0/a10`.
 
-To measure your own PC: `tools/bench.sh` (about 5 min, writes `bench-report.md`).
+To measure your own PC: `tools/bench.sh` (about 5 min). It prints a block at the end to paste into a "Bench result" issue.
 
 ## What you need
 

@@ -15,7 +15,7 @@ still welcome as issues.
 ## Reporting a problem
 
 Open an [issue](https://github.com/surya-koritala/glyd-qwen-3.8-flash/issues) with your GPU, driver, RAM and Linux version, what you
-ran, and what it printed. For speed, run `tools/bench.sh` and attach `bench-report.md`.
+ran, and what it printed. For speed, run `tools/bench.sh` and paste the block it prints at the end.
 
 ## Pull requests
 
