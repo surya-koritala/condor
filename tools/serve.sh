@@ -8,4 +8,6 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 DIR=${GLYD_HF:-$GLYD_QWEN/hf}
 if [ "${1:-}" = --fast ]; then shift; PACK=$DIR/pack; MODE=; else PACK=$DIR/precise; MODE=--precise; fi
 [ -e "$PACK" ] || { echo "$PACK is missing: run tools/download.sh$([ -z "$MODE" ] && echo ' --fast') first." >&2; exit 1; }
+# (precise mode keeps the always-on matrices at six bits: its calibrated experts were packed for that, v0.2)
+[ -n "$MODE" ] && MODE="$MODE --layout i6 --hi i6"
 exec "$GLYD_ENGINE" qwenserve "$DIR/model" "$PACK" $MODE --ctx "${GLYD_CTX:-32768}" --port "${1:-8080}" --page "$HERE"
