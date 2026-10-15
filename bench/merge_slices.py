@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The slices of a benchmark merged into one score (standard library only): merge_slices.py OUT.json SLICE_DIR [SLICE_DIR ...]
+"""The slices of a benchmark merged into one score (Inspect AI's reader where installed, else the standard library): merge_slices.py OUT.json SLICE_DIR [SLICE_DIR ...]
 Reads every Inspect .eval log under the slice directories (OUTDIR/logs/*.eval of eval_slice.py), takes each task's samples by id (a question answered in two slices counts once, the later log wins), and prints and writes
 for each task: questions answered, correct ("C"), accuracy, how many hit the 3,072-token cap, mean output tokens, and the slices it was made of. A running score is the same call on the slices finished so far."""
 import json
@@ -9,6 +9,23 @@ from pathlib import Path
 
 
 def read(path):
+    """The task's name and each sample's score, stop reason, output tokens and time. Through Inspect AI's own reader where it is installed:
+    recent Inspect AI writes .eval logs with zstd compression, which Python's zipfile reads only from 3.14 on."""
+    try:
+        from inspect_ai.log import read_eval_log
+    except ImportError:
+        return read_zip(path)
+    log = read_eval_log(path)
+    rows = {}
+    for s in log.samples or []:
+        sc = next(iter((s.scores or {}).values()), None)
+        ch = (s.output.choices or [None])[0] if s.output else None
+        rows[s.id] = {"value": sc.value if sc else None, "error": s.error, "stop": ch.stop_reason if ch else None,
+                      "tokens": s.output.usage.output_tokens if s.output and s.output.usage else None, "secs": s.total_time}
+    return log.eval.task, rows
+
+
+def read_zip(path):
     z = zipfile.ZipFile(path)
     names = z.namelist()
     head = json.loads(z.read("header.json" if "header.json" in names else "_journal/start.json"))

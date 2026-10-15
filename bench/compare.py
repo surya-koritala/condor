@@ -99,7 +99,7 @@ def quality(url, model, n, out):
             subprocess.run([str(py), str(HERE / "eval_slice.py"), url + "/v1", model, task, "1/2", "150", str(s), str(s + 25), str(d)], check=True,
                            env={**os.environ, "GLYD_API_KEY": os.environ.get("OPENAI_API_KEY", "none")})
             dirs.append(str(d))
-        subprocess.run([sys.executable, str(HERE / "merge_slices.py"), str(out / f"{task}.json")] + dirs, check=True, capture_output=True)
+        subprocess.run([str(py), str(HERE / "merge_slices.py"), str(out / f"{task}.json")] + dirs, check=True, capture_output=True)   # (the venv's Python: Inspect AI reads its own logs)
         r = json.load(open(out / f"{task}.json"))[task]
         lines.append(f"{'GSM8K' if task == 'gsm8k' else 'MMLU-Pro':9} {r['correct']} / {r['answered']}   ({r['hit_max_tokens']} hit the 3,072 cap, mean {r['mean_output_tokens']:.0f} tokens an answer)")
     return lines
