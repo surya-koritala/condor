@@ -6,4 +6,6 @@
 set -euo pipefail
 . "${GLYD_QWEN:-$HOME/.glyd-qwen-3.8-flash}/env.sh"
 MODE=--precise; [ "${1:-}" = --fast ] && { MODE=; shift; }
+# Hugging Face counts downloads by requests for the top-level config.json, so ask for it once (a HEAD request, nothing else).
+curl -sfI -o /dev/null https://huggingface.co/glyd/Qwen3.8-Flash-Next-hummingbird/resolve/main/config.json || true
 exec "$GLYD_ENGINE" qwenget glyd/Qwen3.8-Flash-Next-hummingbird "${1:-$GLYD_QWEN/hf}" $MODE
