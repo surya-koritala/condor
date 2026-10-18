@@ -40,8 +40,14 @@ Thinking is off by default. Send `reasoning_effort` to turn it on.
 
 ## What is tested
 
-`tests/test_server.py` runs these against a live server. All 9 checks passed in the logged run
-(`results/v0.1.0/fast/test_server.txt`) and on the A10 run (`results/v0.1.0/a10`):
+Two scripts run against a live server. Standard library only:
+
+```
+python3 tests/test_server.py --url http://127.0.0.1:8080
+python3 tests/test_agents.py --url http://127.0.0.1:8080
+```
+
+`tests/test_server.py` (9 checks, all passed in `results/v0.1.0/fast/test_server.txt` and on the A10 run in `results/v0.1.0/a10`):
 
 ```
 OpenAI     plain answer, streamed answer, one tool call (not streamed), the tool's result sent back and used
@@ -49,28 +55,64 @@ Anthropic  plain answer, streamed answer, one tool use (not streamed)
 OpenAI     a client that drops a stream halfway; the next request still gets its own answer
 ```
 
-You can run it yourself: `python3 tests/test_server.py --url http://127.0.0.1:8080`.
+`tests/test_agents.py` (19 checks). On my RTX 4080 SUPER, precise mode, 2026-10-15. The v0.1.1 column is a build of v0.1.1's
+server code (same source as the release, built on that machine), not the release download itself:
+
+```
+                                                           v0.1.1    next release
+GET /v1/models                                             pass      pass
+tool call, streamed (OpenAI)                               pass      pass
+tool_use, streamed (Anthropic)                             pass      pass
+two tool calls in one answer, whole and streamed           pass      pass
+parallel_tool_calls: false keeps one call                  pass      pass
+tool_choice "required", one tool                           FAIL      pass
+tool_choice "required", two tools                          FAIL      pass
+tool_choice "required", streamed                           FAIL      pass
+tool_choice "none"                                         FAIL      pass
+tool_choice named function                                 pass      pass
+Anthropic tool_choice any / tool / none                    FAIL      pass
+tool call with thinking on, whole and streamed             pass      pass
+12 tool round trips in one conversation                    pass      pass
+response_format json_object                                FAIL      pass
+response_format json_schema                                FAIL      pass
+```
+
+What failed in v0.1.1:
+
+- `tool_choice: "required"` could call a function that isn't in `tools` (it wrote `unknown`, `weather`, `example_function_name`).
+- `tool_choice: "none"` put the raw `<tool_call>...</tool_call>` text into the answer instead of answering in words.
+- Anthropic `tool_choice: {"type": "tool"}` returned the tool_use block with `stop_reason: "end_turn"` instead of `"tool_use"`.
+  (The "any" and "none" rows failed on the made-up names and the raw tool text above.)
+- `response_format` with `json_object` or `json_schema` was refused with a 400.
+
+The next release fixes these. With the fix, `required` with two tools called a real one 30 times out of 30 (three prompts, ten
+times each, temperature 0.7).
+
+JSON mode is not grammar-constrained decoding. The server puts the instruction (and the schema, if you send one) in the system
+prompt, turns thinking off for that request, and starts the answer with `{`. In my run of 10 prompts x 3 (`json_object`, and
+`json_schema` with nested arrays, enums and numbers), 30 of 30 answers parsed and had the schema's required keys with the right
+types. It can still write JSON that doesn't match a schema; check it if your app depends on it. `response_format` together with
+`tools` in one request is refused for now.
+
+The 12-round tool loop reads only the new part of the conversation on each turn (about 98% of the prompt reused from the turn
+before), so each round took about 0.25 s here.
 
 ## Not tested yet
 
-I haven't checked these, so they may or may not work:
-
-- tool calls while streaming (`"stream": true` with `tools`), OpenAI and Anthropic
-- more than one tool call in a single answer
-- `tool_choice` (`"required"`, `"none"`, a named function) and the Anthropic equivalent
-- long agent loops (many tool round trips in one conversation)
-- tool calls with thinking on
-- `response_format` / JSON mode
-- `GET /v1/models` (some apps call it to fill their model list)
-- Open WebUI, Hermes, Continue, Cline and LibreChat end to end
+- Open WebUI, Hermes, Continue, Cline and LibreChat end to end. The official `openai` (3.31.0) and `anthropic` (1.14.0) Python
+  SDKs stream tool calls fine, including while their request waits behind another one.
+- `usage.prompt_tokens_details.cached_tokens` is not filled in; the reuse shows in the server's log only.
 
 If you try one, tell me how it went in an issue. This list is tracked in
 [#10](https://github.com/surya-koritala/glyd-condor/issues/10).
 
 ## Things that will trip up agent frameworks
 
-- One request at a time. Others queue, so a framework that sends several requests in parallel will see them answered one after another.
-  Give it a long timeout.
+- One request at a time. Others wait their turn and are answered one after another, in the order they came. A streamed request
+  that is waiting gets its headers within a second and then a `: waiting` comment line every second (Anthropic API: a `ping`
+  event), so client read timeouts don't fire; the official SDKs skip these. A client that gives up while waiting is dropped
+  before its prompt is read. (These two are in the next release; in v0.1.1 a waiting request gets nothing until its turn, so
+  give the client a long timeout.) `tests/test_concurrent.py` checks this.
 - Context is 32,768 tokens by default. Agent prompts with many tool definitions get long fast; start the server with a bigger context
   (`GLYD_CTX=65536 tools/serve.sh`, up to 262144) if you need it.
 

@@ -17,8 +17,8 @@ echo "CPU:     $(lscpu 2> /dev/null | sed -n 's/^Model name: *//p' | head -1)"
 echo "RAM:     $(free -g | awk '/^Mem:/ {print $2}') GiB"
 echo "OS:      $(. /etc/os-release 2> /dev/null && echo "$PRETTY_NAME"), kernel $(uname -r)"
 echo "Mode:    $MODE"
-echo "Engine:  $("$GLYD_ENGINE" --version 2> /dev/null || echo "?")"
-echo "Repo:    $(git -C "${GLYD_REPO:-.}" rev-parse --short HEAD 2> /dev/null || echo "?")"
+echo "Engine:  $("$GLYD_ENGINE" --version 2> /dev/null || echo "?"), sha256 $(sha256sum "$GLYD_ENGINE" 2> /dev/null | cut -c1-12)"
+echo "Repo:    $(git -C "${GLYD_REPO:-$(dirname "$0")}" rev-parse --short HEAD 2> /dev/null || echo "?")"
 grep '^|' bench-report.md
 echo '```'
 echo "---- to here ----"

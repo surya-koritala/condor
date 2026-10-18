@@ -51,6 +51,20 @@ are in [bench/](bench). Also tested on a cloud A10 (24 GB): `results/v0.1.0/a10`
 
 To measure your own PC: `tools/bench.sh` (about 5 min). It prints a block at the end to paste into a "Bench result" issue.
 
+### Compare on your own machine
+
+I don't publish comparisons with other software. If you want one, `bench/compare.py` runs the same prompts and the same GSM8K /
+MMLU-Pro questions against any OpenAI-compatible server and prints one block. Run it against this server, then against whatever
+you use now, on the same computer, one at a time:
+
+```sh
+python3 bench/compare.py --url http://127.0.0.1:8080 --model qwen3.8-flash-next --note "precise"
+python3 bench/compare.py --url http://127.0.0.1:PORT --model NAME --note "what it is and how you started it"
+```
+
+Speed is measured on the client side from the stream (time to the first token, then tokens per second), on a short, a ~4K and a
+~30K prompt. Add `--speed-only` to skip the questions (they take about an hour per server). Details in [bench/README.md](bench/README.md).
+
 ## What you need
 
 - NVIDIA RTX 30/40/50 series (or an Ampere+ workstation card) with 12 GB+ VRAM (16 GB recommended), driver 580+
