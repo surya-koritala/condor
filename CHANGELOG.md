@@ -9,6 +9,9 @@
 - A second request waits for the first instead of failing; a client that leaves while waiting is dropped cleanly.
 - bench/compare.py: the same speed test and questions against any OpenAI-compatible server, to compare on your own machine.
 - tools/bench.sh prints a block to paste into a "Bench result" issue. docs/HOW_IT_WORKS.md and docs/CLIENTS.md.
+- Windows 10/11 x64, native: setup.ps1 and tools\\*.ps1 (the .sh scripts' twins). Tested on one machine so far (an L4, 64 GB).
+- 12 GB cards and 32 GB of RAM: setup picks fast mode below 64 GB of RAM; measured on a 4080 SUPER held back to those sizes.
+- The repository is now surya-koritala/glyd-condor (Glyd Condor); the old links redirect.
 
 ## 0.1.1
 

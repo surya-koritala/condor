@@ -5,7 +5,8 @@ param([switch]$Fast, [int]$Port = 8080)
 $ErrorActionPreference = 'Stop'
 . (Join-Path $(if ($env:GLYD_QWEN) { $env:GLYD_QWEN } else { Join-Path $HOME '.glyd-qwen-3.8-flash' }) 'env.ps1')
 $dir = if ($env:GLYD_HF) { $env:GLYD_HF } else { Join-Path $env:GLYD_QWEN 'hf' }
-if ($Fast) { $pack = Join-Path $dir 'pack'; $mode = @() } else { $pack = Join-Path $dir 'precise'; $mode = @('--precise') }
+# (precise mode keeps the always-on matrices at six bits: its calibrated experts were packed for that, v0.2)
+if ($Fast) { $pack = Join-Path $dir 'pack'; $mode = @() } else { $pack = Join-Path $dir 'precise'; $mode = @('--precise', '--layout', 'i6', '--hi', 'i6') }
 if (-not (Test-Path $pack)) { throw "$pack is missing: run tools\download.ps1$(if ($Fast) { ' -Fast' }) first." }
 $ctx = if ($env:GLYD_CTX) { $env:GLYD_CTX } else { '32768' }
 & $env:GLYD_ENGINE qwenserve (Join-Path $dir 'model') $pack @mode --ctx $ctx --port $Port --page $PSScriptRoot
