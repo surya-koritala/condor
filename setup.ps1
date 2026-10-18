@@ -13,13 +13,14 @@ $gpu, $vram, $drv = (nvidia-smi.exe --query-gpu=name,memory.total,driver_version
 $ram = [math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB)
 $disk = [math]::Floor((Get-PSDrive ($H.Substring(0, 1))).Free / 1GB)
 "  GPU $gpu, $([math]::Round([int]$vram / 1024)) GB, driver $drv;  RAM $ram GiB;  free disk $disk GB"
-if ([int]$vram -lt 15000) { '  Note: the GPU has less than 16 GB; this is tested on 16 GB and up.' }
-if ($ram -lt 60) { '  Note: less than 64 GB of RAM; expect slower answers while the model''s files come from the disk.' }
+if ([int]$vram -lt 15000) { '  Note: less than 16 GB on the GPU: fewer experts fit there (on a 16 GB card held to 12 GB, about 10% slower). Under 12 GB is untested.' }
+if ($ram -lt 60) { '  Note: less than 64 GB of RAM: fast mode is the one to pick (precise''s experts do not fit in RAM and run about 40% slower); the first answer after a start is slower while experts load from the disk.' }
 if ([int]($drv -split '\.')[0] -lt 580) { throw "The NVIDIA driver is $drv; 580 or newer is needed (nvidia.com/drivers), then run this again." }
 
 if (-not (Test-Path (Join-Path $H 'bin\glyd-engine.exe'))) { Say 'Installing the engine (about 50 MB)'; & (Join-Path $PSScriptRoot 'tools\install.ps1') }
 . (Join-Path $H 'env.ps1')
-$mode = Ask 'Mode: precise (recommended: the most accurate, best for code) or fast (quicker answers, a smaller download)' 'precise'
+$def = if ($ram -lt 60) { 'fast' } else { 'precise' }
+$mode = Ask 'Mode: precise (the most accurate, best for code; wants 64 GB of RAM) or fast (quicker answers, a smaller download)' $def
 switch ($mode) { 'precise' { $part = 'precise'; $gb = 82 } 'fast' { $part = 'pack'; $gb = 68 } default { throw 'Answer precise or fast.' } }
 if (-not (Test-Path (Join-Path $H 'hf\model\config.json')) -or -not (Test-Path (Join-Path $H "hf\$part"))) {
     if ($disk -lt $gb + 7) { throw "About $($gb + 7) GB of free disk is needed for $mode mode; $disk GB is free." }

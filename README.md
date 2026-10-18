@@ -53,10 +53,14 @@ To measure your own PC: `tools/bench.sh` (about 5 min). It prints a block at the
 
 ## What you need
 
-- NVIDIA RTX 30/40/50 series (or an Ampere+ workstation card) with 16 GB+ VRAM, driver 580+
-- 64 GB RAM
+- NVIDIA RTX 30/40/50 series (or an Ampere+ workstation card) with 12 GB+ VRAM (16 GB recommended), driver 580+
+- 32 GB+ RAM: 64 GB for precise mode, fast mode is the one for 32 GB
 - ~90 GB free disk (75 GB for fast mode), SSD strongly recommended
 - Linux x86-64, Ubuntu 22.04+ or similar (tested on 22.04 and 24.04), or Windows 10/11 x64 (see below). WSL is untested.
+
+Smaller machines, measured on my 4080 SUPER held back to look like them (fast mode, greedy, short prompt): 12 GB of VRAM about 150
+tok/s, 32 GB of RAM about 128, both together about 145. A 12 GB card like a 3060 has about half the 4080's memory bandwidth, so expect
+roughly half that. Not yet run on a real 12 GB card.
 
 ## Install
 

@@ -12,13 +12,14 @@ command -v nvidia-smi > /dev/null || { echo "No NVIDIA driver found (nvidia-smi)
 read -r GPU VRAM DRV < <(nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv,noheader,nounits | head -1 | awk -F', ' '{gsub(/ /,"_",$1); print $1, $2, $3}')
 RAM=$(free -g | awk '/^Mem:/ {print $2}'); DISK=$(df -BG --output=avail "$HOME" | tail -1 | tr -dc 0-9)
 echo "  GPU ${GPU//_/ }, $(((VRAM + 512) / 1024)) GB, driver $DRV;  RAM $RAM GiB;  free disk $DISK GB"
-[ "$VRAM" -ge 15000 ] || echo "  Note: the GPU has less than 16 GB; this is tested on 16 GB and up."
-[ "$RAM" -ge 60 ] || echo "  Note: less than 64 GB of RAM; expect slower answers while the model's files come from the disk."
+[ "$VRAM" -ge 15000 ] || echo "  Note: less than 16 GB on the GPU: fewer experts fit there (on a 16 GB card held to 12 GB, about 10% slower). Under 12 GB is untested."
+[ "$RAM" -ge 60 ] || echo "  Note: less than 64 GB of RAM: fast mode is the one to pick (precise's experts do not fit in RAM and run about 40% slower); the first answer after a start is slower while experts load from the disk."
 [ "${DRV%%.*}" -ge 580 ] || { echo "  The NVIDIA driver is $DRV; 580 or newer is needed. On Ubuntu: sudo apt install nvidia-driver-595 (or sudo ubuntu-drivers install), reboot, then run this again."; exit 1; }
 
 [ -x "$H/bin/glyd-engine" ] || { say "Installing the engine (about 50 MB)"; bash "$HERE/tools/install.sh"; }
 . "$H/env.sh"
-MODE=$(ask "Mode: precise (recommended: the most accurate, best for code) or fast (quicker answers, a smaller download)" precise)
+DEF=precise; [ "$RAM" -ge 60 ] || DEF=fast
+MODE=$(ask "Mode: precise (the most accurate, best for code; wants 64 GB of RAM) or fast (quicker answers, a smaller download)" $DEF)
 case $MODE in precise) PART=precise; GB=82;; fast) PART=pack; GB=68;; *) echo "Answer precise or fast."; exit 1;; esac
 if [ ! -f "$H/hf/model/config.json" ] || [ ! -e "$H/hf/$PART" ]; then
   [ "$DISK" -ge $((GB + 7)) ] || { echo "About $((GB + 7)) GB of free disk is needed for $MODE mode; $DISK GB is free."; exit 1; }
