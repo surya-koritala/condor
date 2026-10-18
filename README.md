@@ -1,6 +1,6 @@
 # Glyd Condor
 
-Qwen3.8-Flash-Next (180B params, MoE) running on one 16 GB NVIDIA card + 64 GB RAM, on Linux. Uses our own engine and our own
+Qwen3.8-Flash-Next (180B params, MoE) running on one 12-16 GB NVIDIA card + 32-64 GB RAM, on Linux or Windows. Uses our own engine and our own
 compressed weights. Free for personal use.
 
 ![Star Drift, a space shooter the model wrote in one prompt](docs/media/star-drift.gif)
@@ -98,9 +98,9 @@ powershell -ExecutionPolicy Bypass -File setup.ps1
 ```
 
 Same steps and questions; `tools\download.ps1` and `tools\serve.ps1` (`-Fast` for fast mode) are the twins of the `.sh` scripts.
-Tested so far on one Windows machine, an AWS g6 (L4 24 GB, 64 GB RAM, driver 581.80): `tests/test_server.py` 9/9, about 64 tok/s
-precise and 71 fast on that card (it has about 40% of a 4080's memory bandwidth), the model loaded in about 1.5 min. Not yet tested
-on a GeForce card under Windows, or under WSL2.
+Tested on one Windows machine, an AWS g6 (L4 24 GB, 8-core EPYC, 64 GB RAM, driver 581.80), clean install from the release files:
+the tests in `tests/` all pass in both modes, and `tools\bench.ps1` (fast) gives 47 tok/s chat, 36-42 on 4K-32K prompts. The L4 has
+about 40% of a 4080's memory bandwidth. Not yet tested on a GeForce card under Windows, or under WSL2.
 
 If you use an AI coding assistant, you can also just paste it this:
 `Set up https://github.com/surya-koritala/glyd-condor on this PC - follow docs/AI_SETUP.md`
@@ -124,7 +124,7 @@ To switch: `tools/download.sh --fast` then `tools/serve.sh --fast` (drop `--fast
 ## Known limits
 
 - Text only. The base model's vision part isn't supported yet.
-- Linux + NVIDIA only, 16 GB minimum.
+- NVIDIA only, 12 GB minimum. No macOS or AMD.
 - One request at a time, and others queue.
 - Fast mode is noticeably weaker on long code.
 - If you don't have enough free RAM, it gets very slow and the disk gets busy. Close the browser tabs eating your RAM.
