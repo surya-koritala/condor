@@ -30,24 +30,24 @@ My machine: RTX 4080 SUPER 16 GB, Ryzen 9 7950X3D, 64 GB RAM, Ubuntu 26.04.
 
 ```
                                      precise         fast
-experts, avg bits/weight             ~2.7            ~2.1
-attention + rest                     4-5 bit         4-5 bit
+experts, avg bits/weight             ~3.0            ~2.1
+attention + rest                     6 bit           4-5 bit
 KV cache                             bf16            bf16
 download                             82 GB           68 GB
+KL divergence vs bf16 (wikitext-2)   0.22            0.53
 
-chat, default sampling               117 tok/s       135 tok/s
-greedy, short prompt                 145 tok/s       169-173 tok/s
-read a 32K-token prompt              ~7 s            ~7 s
+writing, short / 4K / 30K prompt     118 / 110 / 96  145 / 137 / 156 tok/s
+greedy, short prompt (best case)     ~130 tok/s      ~160 tok/s
+read a 30K-token prompt              7.5 s           7.3 s
 read a 261K-token prompt             -               66 s
 
-GSM8K   (150 q, Inspect AI)          148/150         148/150
-MMLU-Pro (150 q, Inspect AI)         124/150         118/150
-one-shot game (Star Drift)           3/6 playable    1/6
+GSM8K   (150 q, Inspect AI)          148/150         150/150
+MMLU-Pro (150 q, Inspect AI)         126/150         118/150
 ```
 
-Benchmarks were run with thinking off and greedy decoding. GSM8K is mostly a sanity check that compression didn't break reasoning.
-MMLU-Pro and the one-shot game tell you more. Every question, answer and log is in [results/v0.1.0](results/v0.1.0), and the scripts
-are in [bench/](bench). Also tested on a cloud A10 (24 GB): `results/v0.1.0/a10`.
+Benchmarks were run with thinking off and greedy decoding (bench/compare.py). GSM8K is mostly a sanity check that compression didn't
+break reasoning; MMLU-Pro tells you more. In v0.1 the one-shot game test came out 3 of 6 playable in precise mode and 1 of 6 in fast.
+Logs are in [results/](results), the scripts in [bench/](bench). Also tested on a cloud A10 (24 GB) and, on Windows, an L4 (24 GB).
 
 To measure your own PC: `tools/bench.sh` (about 5 min). It prints a block at the end to paste into a "Bench result" issue.
 
