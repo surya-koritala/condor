@@ -15,14 +15,17 @@ foreach ($f in $files) {
     $to = Join-Path $H "$f.new"
     if (Test-Path $Base) { Copy-Item (Join-Path $Base $f) $to } else { curl.exe -fsSL --retry 3 -o $to "$Base/$f"; if ($LASTEXITCODE) { throw "downloading $f failed" } }
 }
-# (SHA256SUMS lists every platform's files: check the ones here)
+# (SHA256SUMS lists every platform's files: the two here must be in it and match)
+$checked = 0
 foreach ($line in Get-Content (Join-Path $H 'SHA256SUMS.new')) {
     $want, $name = $line -split '\s+\*?', 2
     if ($files -contains $name) {
         $got = (Get-FileHash -Algorithm SHA256 (Join-Path $H "$name.new")).Hash.ToLower()
         if ($got -ne $want.ToLower()) { throw "$name does not match SHA256SUMS" }
+        $checked++
     }
 }
+if ($checked -ne 2) { throw 'SHA256SUMS does not list glyd-engine.exe and libglyd_gpu_cuda13.dll' }
 foreach ($f in 'glyd-engine.exe', 'libglyd_gpu_cuda13.dll') { Move-Item -Force (Join-Path $H "$f.new") (Join-Path $H "bin\$f") }
 Move-Item -Force (Join-Path $H 'SHA256SUMS.new') (Join-Path $H 'SHA256SUMS')
 @"

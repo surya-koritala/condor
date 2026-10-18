@@ -11,7 +11,9 @@ BASE=${GLYD_RELEASE_URL:-$BASE}   # (a mirror, or file:///dir for a test before 
 command -v nvidia-smi > /dev/null || { echo "no nvidia-smi: an NVIDIA driver is needed" >&2; exit 1; }
 cd "$H"
 for f in glyd-engine libglyd_gpu_cuda13.so SHA256SUMS; do curl -fsSL --retry 3 -o "$f.new" "$BASE/$f" && mv "$f.new" "$f"; done
-sha256sum -c --quiet SHA256SUMS
+# (SHA256SUMS lists every platform's files: the two here must be in it and match)
+grep -q ' glyd-engine$' SHA256SUMS && grep -q ' libglyd_gpu_cuda13\.so$' SHA256SUMS && sha256sum -c --quiet --ignore-missing SHA256SUMS ||
+  { echo "glyd-engine or libglyd_gpu_cuda13.so does not match SHA256SUMS" >&2; exit 1; }
 mv glyd-engine bin/ && chmod +x bin/glyd-engine && mv libglyd_gpu_cuda13.so lib/
 cat > "$H/env.sh" <<ENV
 export GLYD_QWEN=$H GLYD_REPO=$HERE GLYD_ENGINE=$H/bin/glyd-engine GLYD_GPU_LIB=$H/lib/libglyd_gpu_cuda13.so
