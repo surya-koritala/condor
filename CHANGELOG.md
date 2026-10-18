@@ -7,6 +7,8 @@
   slower than precise on short prompts, about the same at 30K. 52 GB of experts (89 GB in all), 64 GB of RAM. Precise stays the default.
 - The MCP server's glyd_start: `mode` fast and best now work on Linux (it passed a flag serve.sh didn't take), and precise is the
   default it describes.
+- The MCP server's glyd_stop on Ubuntu 22.04: it left the server running and could stop the program that started the MCP server
+  (22.04's `kill` read the server's process group as its own). Fixed; tested on 22.04 and 26.04.
 - README: the IPv4 workaround is gone (the engine falls back to IPv4 by itself).
 
 ## 0.2.0
