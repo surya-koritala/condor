@@ -1,4 +1,4 @@
-# Qwen3.8-Flash-Next on Glyd
+# Glyd Condor
 
 Qwen3.8-Flash-Next (180B params, MoE) running on one 16 GB NVIDIA card + 64 GB RAM, on Linux. Uses our own engine and our own
 compressed weights. Free for personal use.
