@@ -56,7 +56,7 @@ To measure your own PC: `tools/bench.sh` (about 5 min). It prints a block at the
 - NVIDIA RTX 30/40/50 series (or an Ampere+ workstation card) with 16 GB+ VRAM, driver 580+
 - 64 GB RAM
 - ~90 GB free disk (75 GB for fast mode), SSD strongly recommended
-- Linux x86-64, Ubuntu 22.04+ or similar (tested on 22.04 and 24.04). No Windows yet, and WSL is untested.
+- Linux x86-64, Ubuntu 22.04+ or similar (tested on 22.04 and 24.04), or Windows 10/11 x64 (see below). WSL is untested.
 
 ## Install
 
@@ -68,6 +68,18 @@ git clone https://github.com/surya-koritala/glyd-condor && cd glyd-condor
 It checks your GPU/RAM/disk, installs the engine (no sudo), downloads the model (resumable, just rerun it if it stops), asks precise or
 fast and how much context, then opens the app at `http://127.0.0.1:8080`. Enter takes the defaults. Run `./setup.sh` again to start it
 next time; it won't download anything twice.
+
+On Windows (10/11 or Server 2022, x64, NVIDIA driver 580+), in PowerShell:
+
+```powershell
+git clone https://github.com/surya-koritala/glyd-condor; cd glyd-condor
+powershell -ExecutionPolicy Bypass -File setup.ps1
+```
+
+Same steps and questions; `tools\download.ps1` and `tools\serve.ps1` (`-Fast` for fast mode) are the twins of the `.sh` scripts.
+Tested so far on one Windows machine, an AWS g6 (L4 24 GB, 64 GB RAM, driver 581.80): `tests/test_server.py` 9/9, about 64 tok/s
+precise and 71 fast on that card (it has about 40% of a 4080's memory bandwidth), the model loaded in about 1.5 min. Not yet tested
+on a GeForce card under Windows, or under WSL2.
 
 If you use an AI coding assistant, you can also just paste it this:
 `Set up https://github.com/surya-koritala/glyd-condor on this PC - follow docs/AI_SETUP.md`
