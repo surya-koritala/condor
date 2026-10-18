@@ -19,14 +19,15 @@ echo "  GPU ${GPU//_/ }, $(((VRAM + 512) / 1024)) GB, driver $DRV;  RAM $RAM GiB
 [ -x "$H/bin/glyd-engine" ] || { say "Installing the engine (about 50 MB)"; bash "$HERE/tools/install.sh"; }
 . "$H/env.sh"
 DEF=precise; [ "$RAM" -ge 60 ] || DEF=fast
-MODE=$(ask "Mode: precise (the most accurate, best for code; wants 64 GB of RAM) or fast (quicker answers, a smaller download)" $DEF)
-case $MODE in precise) PART=precise; GB=82;; fast) PART=pack; GB=68;; *) echo "Answer precise or fast."; exit 1;; esac
+MODE=$(ask "Mode: precise (accurate, good for code; wants 64 GB of RAM), best (more accurate still, about 10% slower, 7 GB more to download; 64 GB of RAM) or fast (quicker answers, a smaller download)" $DEF)
+case $MODE in precise) PART=precise; GB=82;; best) PART=best; GB=89;; fast) PART=pack; GB=68;; *) echo "Answer precise, best or fast."; exit 1;; esac
+F=; [ "$MODE" = precise ] || F=--$MODE
 if [ ! -f "$H/hf/model/config.json" ] || [ ! -e "$H/hf/$PART" ]; then
   [ "$DISK" -ge $((GB + 7)) ] || { echo "About $((GB + 7)) GB of free disk is needed for $MODE mode; $DISK GB is free."; exit 1; }
   say "Downloading the model (about $GB GB; it resumes if it stops)"
-  bash "$HERE/tools/download.sh" $([ "$MODE" = fast ] && echo --fast)
+  bash "$HERE/tools/download.sh" $F
 fi
 CTX=$(ask "Context (tokens the model keeps in mind): 32768 is fastest; 65536, 131072 or 262144 hold more, with less room for the model on the GPU" 32768)
 say "Starting: chat at http://127.0.0.1:8080/  ·  API at http://127.0.0.1:8080/v1 (OpenAI and Anthropic)  ·  Ctrl+C to stop"
 ( sleep 3; command -v xdg-open > /dev/null && xdg-open http://127.0.0.1:8080/ > /dev/null 2>&1 || true ) &
-GLYD_CTX=$CTX exec bash "$HERE/tools/serve.sh" $([ "$MODE" = fast ] && echo --fast) 8080
+GLYD_CTX=$CTX exec bash "$HERE/tools/serve.sh" $F 8080

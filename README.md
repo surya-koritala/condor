@@ -29,20 +29,20 @@ next.
 My machine: RTX 4080 SUPER 16 GB, Ryzen 9 7950X3D, 64 GB RAM, Ubuntu 26.04.
 
 ```
-                                     precise         fast
-experts, avg bits/weight             ~3.0            ~2.1
-attention + rest                     6 bit           4-5 bit
-KV cache                             bf16            bf16
-download                             82 GB           68 GB
-KL divergence vs bf16 (wikitext-2)   0.22            0.53
+                                     precise         best            fast
+experts, avg bits/weight             ~3.0            ~3.4            ~2.1
+attention + rest                     6 bit           6 bit           4-5 bit
+KV cache                             bf16            bf16            bf16
+download                             82 GB           89 GB           68 GB
+KL divergence vs bf16 (wikitext-2)   0.22            0.165           0.53
 
-writing, short / 4K / 30K prompt     118 / 110 / 96  145 / 137 / 156 tok/s
-greedy, short prompt (best case)     ~130 tok/s      ~160 tok/s
-read a 30K-token prompt              7.5 s           7.3 s
-read a 261K-token prompt             -               66 s
+writing, short / 4K / 30K prompt     118 / 110 / 96  104 / 92 / 97   145 / 137 / 156 tok/s
+greedy, short prompt (best case)     ~130 tok/s      ~105 tok/s      ~160 tok/s
+read a 30K-token prompt              7.5 s           7.5 s           7.3 s
+read a 261K-token prompt             -               -               66 s
 
-GSM8K   (150 q, Inspect AI)          148/150         150/150
-MMLU-Pro (150 q, Inspect AI)         126/150         118/150
+GSM8K   (150 q, Inspect AI)          148/150         149/150         150/150
+MMLU-Pro (150 q, Inspect AI)         126/150         128/150         118/150
 ```
 
 Benchmarks were run with thinking off and greedy decoding (bench/compare.py). GSM8K is mostly a sanity check that compression didn't
@@ -72,7 +72,7 @@ Speed is measured on the client side from the stream (time to the first token, t
 - A CPU that isn't slow. It matters about as much as the GPU: experts that miss the GPU cache are computed on the CPU, so an older few-core
   CPU with DDR4 (say 8 Zen 2 cores, AVX2 only) can set the speed. One user measured about 70 ms a pass on that, against about 16 ms on a
   16-core 7950X3D, with the GPU at 33%.
-- ~90 GB free disk (75 GB for fast mode), SSD strongly recommended
+- ~90 GB free disk (75 GB for fast mode, 96 GB for best), SSD strongly recommended
 - Linux x86-64, Ubuntu 22.04+ or similar (tested on 22.04 and 24.04), or Windows 10/11 x64 (see below). WSL is untested.
 
 Smaller machines, measured on my 4080 SUPER held back to look like them (fast mode, greedy, short prompt): 12 GB of VRAM about 150
@@ -105,10 +105,12 @@ about 40% of a 4080's memory bandwidth. Not yet tested on a GeForce card under W
 If you use an AI coding assistant, you can also just paste it this:
 `Set up https://github.com/surya-koritala/glyd-condor on this PC - follow docs/AI_SETUP.md`
 
-## Precise vs fast
+## Precise, best and fast
 
-Precise is the default and I'd use it for code: long programs come out right a lot more often. Fast is 15-20% quicker and fine for chat.
-To switch: `tools/download.sh --fast` then `tools/serve.sh --fast` (drop `--fast` to go back).
+Precise is the default and I'd use it for code: long programs come out right a lot more often. Best (v0.2.1) keeps more bits in the
+experts: it's the closest to the original (KL 0.165 vs 0.22), about 10% slower on short prompts and 7 GB more to download. It also
+wants 64 GB of RAM. Fast is 15-20% quicker than precise and fine for chat.
+To switch: `tools/download.sh --best` (or `--fast`), then `tools/serve.sh --best`. Drop the flag to go back to precise.
 
 ## Using it
 
@@ -134,10 +136,8 @@ To switch: `tools/download.sh --fast` then `tools/serve.sh --fast` (drop `--fast
 - Download stopped: rerun `./setup.sh`.
 - "No NVIDIA driver found" / "580 or newer is needed": update the driver (Ubuntu: `sudo apt install nvidia-driver-595`), reboot.
 - Port 8080 in use: it's probably already running, or use `tools/serve.sh 8090`.
-- Download sits at 0 MB/s, then "Connection reset by peer": on some networks IPv6 to Hugging Face's CDN (us.aws.cdn.hf.co) is broken while IPv4
-  works (`curl -4` does). Until an engine that falls back to IPv4 ships, download with `hf download glyd/Qwen3.8-Flash-Next-hummingbird --exclude "pack/*"`
-  (`--exclude "precise/*"` for fast mode; `pip install -U huggingface_hub` gives you `hf`) into the same `HF_HUB_CACHE`, then rerun `./setup.sh`: it finds
-  the files and downloads nothing. Once that engine is out, `GLYD_IPV4=1 ./setup.sh` forces IPv4.
+- Download sits at 0 MB/s, then "Connection reset by peer": on some networks IPv6 to Hugging Face's CDN is broken while IPv4 works. Since v0.2.0
+  the engine switches to IPv4 by itself when that happens; `GLYD_IPV4=1 ./setup.sh` forces IPv4 from the start.
 - Slower than the numbers above: check the CPU (see What you need), and the context. On a 16 GB card a bigger `GLYD_CTX` takes VRAM from the expert
   cache, so it can be slower: one user saw 11-15% slower at 131,072 than at 32,768 (the default).
 

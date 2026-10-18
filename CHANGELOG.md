@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1
+
+- Best mode (`--best`, `-Best` on Windows; setup asks): about 30% of the experts at 4 bits, the rest at 3, calibrated like precise.
+  KL divergence vs bf16 (wikitext-2, 32 x 512) 0.165 vs precise's 0.22, top-1 89% vs 87%; GSM8K 149/150, MMLU-Pro 128/150. About 10%
+  slower than precise on short prompts, about the same at 30K. 52 GB of experts (89 GB in all), 64 GB of RAM. Precise stays the default.
+- The MCP server's glyd_start: `mode` fast and best now work on Linux (it passed a flag serve.sh didn't take), and precise is the
+  default it describes.
+- README: the IPv4 workaround is gone (the engine falls back to IPv4 by itself).
+
 ## 0.2.0
 
 - Precise mode is closer to the original model: its experts are packed again with calibration, and the always-on matrices are kept at
