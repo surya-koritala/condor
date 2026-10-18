@@ -61,7 +61,7 @@ To measure your own PC: `tools/bench.sh` (about 5 min). It prints a block at the
 ## Install
 
 ```sh
-git clone https://github.com/surya-koritala/glyd-qwen-3.8-flash && cd glyd-qwen-3.8-flash
+git clone https://github.com/surya-koritala/glyd-condor && cd glyd-condor
 ./setup.sh
 ```
 
@@ -70,7 +70,7 @@ fast and how much context, then opens the app at `http://127.0.0.1:8080`. Enter 
 next time; it won't download anything twice.
 
 If you use an AI coding assistant, you can also just paste it this:
-`Set up https://github.com/surya-koritala/glyd-qwen-3.8-flash on this PC - follow docs/AI_SETUP.md`
+`Set up https://github.com/surya-koritala/glyd-condor on this PC - follow docs/AI_SETUP.md`
 
 ## Precise vs fast
 
@@ -84,7 +84,7 @@ To switch: `tools/download.sh --fast` then `tools/serve.sh --fast` (drop `--fast
 - OpenAI-compatible API: `http://127.0.0.1:8080/v1`, any key and any model name.
 - Anthropic-compatible API: `http://127.0.0.1:8080/v1/messages`, e.g. `ANTHROPIC_BASE_URL=http://127.0.0.1:8080 claude`.
 - Other apps and agent frameworks, and what's tested with tool calls: [docs/CLIENTS.md](docs/CLIENTS.md).
-- MCP: `claude mcp add glyd -- ~/.glyd-qwen-3.8-flash/bin/glyd-engine qwenmcp --repo /path/to/glyd-qwen-3.8-flash`
+- MCP: `claude mcp add glyd -- ~/.glyd-qwen-3.8-flash/bin/glyd-engine qwenmcp --repo /path/to/glyd-condor`
 - Thinking is off by default (fastest). Turn it on in chat settings or with `reasoning_effort`.
 - Context up to 262,144 tokens. Follow-up messages reuse the conversation, so they start in under a second.
 
@@ -102,7 +102,7 @@ To switch: `tools/download.sh --fast` then `tools/serve.sh --fast` (drop `--fast
 - "No NVIDIA driver found" / "580 or newer is needed": update the driver (Ubuntu: `sudo apt install nvidia-driver-595`), reboot.
 - Port 8080 in use: it's probably already running, or use `tools/serve.sh 8090`.
 
-Anything else: open an [issue](https://github.com/surya-koritala/glyd-qwen-3.8-flash/issues) with what it printed. Security stuff goes
+Anything else: open an [issue](https://github.com/surya-koritala/glyd-condor/issues) with what it printed. Security stuff goes
 privately via [SECURITY.md](SECURITY.md).
 
 ## License
@@ -110,7 +110,7 @@ privately via [SECURITY.md](SECURITY.md).
 - Model: [Qwen3.8-Flash-Next](https://huggingface.co/Qwen/Qwen3.8-Flash-Next) by the Qwen team, under its license. The compressed
   weights on [Hugging Face](https://huggingface.co/glyd/Qwen3.8-Flash-Next-hummingbird) carry the same license.
 - This repo (setup scripts, chat app, benchmarks, docs): [Apache 2.0](LICENSE).
-- The engine ships compiled in [releases](https://github.com/surya-koritala/glyd-qwen-3.8-flash/releases) under
+- The engine ships compiled in [releases](https://github.com/surya-koritala/glyd-condor/releases) under
   [BUSL 1.1](ENGINE-LICENSE): free for personal, research and non-commercial use. Commercial use needs a license
   (suryakoritala@getglyd.com). Each version turns Apache 2.0 four years after release.
 

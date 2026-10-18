@@ -27,7 +27,7 @@ If something is short, stop and tell the user which requirement, and by how much
 ## 2. Install
 
 ```sh
-git clone https://github.com/surya-koritala/glyd-qwen-3.8-flash && cd glyd-qwen-3.8-flash
+git clone https://github.com/surya-koritala/glyd-condor && cd glyd-condor
 tools/install.sh                  # the compiled engine under ~/.glyd-qwen-3.8-flash; no sudo, nothing else to install
 tools/download.sh                 # precise mode (recommended), about 82 GB; --fast for fast mode, about 68 GB
 ```

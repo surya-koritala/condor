@@ -65,7 +65,7 @@ I haven't checked these, so they may or may not work:
 - Open WebUI, Hermes, Continue, Cline and LibreChat end to end
 
 If you try one, tell me how it went in an issue. This list is tracked in
-[#10](https://github.com/surya-koritala/glyd-qwen-3.8-flash/issues/10).
+[#10](https://github.com/surya-koritala/glyd-condor/issues/10).
 
 ## Things that will trip up agent frameworks
 
