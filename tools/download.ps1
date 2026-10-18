@@ -8,6 +8,7 @@ $ErrorActionPreference = 'Stop'
 if (-not $Dir) { $Dir = Join-Path $env:GLYD_QWEN 'hf' }
 # Hugging Face counts downloads by requests for the top-level config.json, so ask for it once (a HEAD request, nothing else).
 curl.exe -sfI -o NUL https://huggingface.co/glyd/Qwen3.8-Flash-Next-hummingbird/resolve/main/config.json
-$mode = if ($Fast) { @() } else { @('--precise') }
-& $env:GLYD_ENGINE qwenget glyd/Qwen3.8-Flash-Next-hummingbird $Dir @mode
+$a = @('qwenget', 'glyd/Qwen3.8-Flash-Next-hummingbird', $Dir)
+if (-not $Fast) { $a += '--precise' }
+& $env:GLYD_ENGINE @a
 exit $LASTEXITCODE
