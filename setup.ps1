@@ -28,6 +28,6 @@ if (-not (Test-Path (Join-Path $H 'hf\model\config.json')) -or -not (Test-Path (
     if ($LASTEXITCODE) { throw 'the download stopped: run this again to resume it' }
 }
 $env:GLYD_CTX = Ask 'Context (tokens the model keeps in mind): 32768 is fastest; 65536, 131072 or 262144 hold more, with less room for the model on the GPU' '32768'
-Say 'Starting: chat at http://127.0.0.1:8080/  ·  API at http://127.0.0.1:8080/v1 (OpenAI and Anthropic)  ·  Ctrl+C to stop'
+Say 'Starting: chat at http://127.0.0.1:8080/  |  API at http://127.0.0.1:8080/v1 (OpenAI and Anthropic)  |  Ctrl+C to stop'
 Start-Job { Start-Sleep 3; Start-Process 'http://127.0.0.1:8080/' } | Out-Null
 & (Join-Path $PSScriptRoot 'tools\serve.ps1') -Fast:($mode -eq 'fast') 8080
