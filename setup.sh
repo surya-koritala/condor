@@ -16,7 +16,11 @@ echo "  GPU ${GPU//_/ }, $(((VRAM + 512) / 1024)) GB, driver $DRV;  RAM $RAM GiB
 [ "$RAM" -ge 60 ] || echo "  Note: less than 64 GB of RAM: fast mode is the one to pick (precise's experts do not fit in RAM and run about 40% slower); the first answer after a start is slower while experts load from the disk."
 [ "${DRV%%.*}" -ge 580 ] || { echo "  The NVIDIA driver is $DRV; 580 or newer is needed. On Ubuntu: sudo apt install nvidia-driver-595 (or sudo ubuntu-drivers install), reboot, then run this again."; exit 1; }
 
-[ -x "$H/bin/glyd-engine" ] || { say "Installing the engine (about 50 MB)"; bash "$HERE/tools/install.sh"; }
+# (the engine again when the latest release is not the installed one: these scripts may need it; offline, the installed one stays)
+NEW=$(curl -fsSL --max-time 10 "${GLYD_RELEASE_URL:-https://github.com/surya-koritala/glyd-condor/releases/latest/download}/SHA256SUMS" 2> /dev/null || true)
+if [ ! -x "$H/bin/glyd-engine" ] || { [ -n "$NEW" ] && [ "$NEW" != "$(cat "$H/SHA256SUMS" 2> /dev/null)" ]; }; then
+  say "Installing the engine (about 50 MB)"; bash "$HERE/tools/install.sh"
+fi
 . "$H/env.sh"
 DEF=precise; [ "$RAM" -ge 60 ] || DEF=fast
 MODE=$(ask "Mode: precise (accurate, good for code; wants 64 GB of RAM), best (more accurate still, about 10% slower, 7 GB more to download; 64 GB of RAM) or fast (quicker answers, a smaller download)" $DEF)

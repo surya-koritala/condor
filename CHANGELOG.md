@@ -10,6 +10,8 @@
 - The MCP server's glyd_stop on Ubuntu 22.04: it left the server running and could stop the program that started the MCP server
   (22.04's `kill` read the server's process group as its own). Fixed; tested on 22.04 and 26.04.
 - The Monitor tab and the bench block name best mode (they said fast).
+- setup.sh installs the engine again when the latest release is newer than the installed one (on Windows, run tools\install.ps1
+  after `git pull` for now).
 - README: the IPv4 workaround is gone (the engine falls back to IPv4 by itself).
 
 ## 0.2.0
