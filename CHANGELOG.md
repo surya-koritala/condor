@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.3 (not released yet)
+## 0.2.3
 
 - Images: PNG and JPEG in OpenAI `image_url` parts (base64, or a URL on a public host: the server won't fetch from this computer or
   its network on a client's behalf) and Anthropic image blocks, up to 1,024 tokens an image by default (`--image-pixels`). Our own decoder, no image library; the image encoder runs on the GPU and matches the reference model
