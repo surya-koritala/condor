@@ -1,4 +1,4 @@
-# Setting up Glyd Condor (Qwen3.8-Flash-Next): steps for an AI assistant
+# Setting up Condor (Qwen3.8-Flash-Next): steps for an AI assistant
 
 You are setting up Glyd's Qwen3.8-Flash-Next (Hummingbird level) for a user: Qwen3.8-Flash-Next running on their own NVIDIA GPU, with a chat page and an OpenAI- and
 Anthropic-compatible API. Follow these steps in order, and tell the user what you find at each one.
@@ -27,7 +27,7 @@ If something is short, stop and tell the user which requirement, and by how much
 ## 2. Install
 
 ```sh
-git clone https://github.com/surya-koritala/glyd-condor && cd glyd-condor
+git clone https://github.com/surya-koritala/condor && cd condor
 tools/install.sh                  # the compiled engine under ~/.glyd-qwen-3.8-flash; no sudo, nothing else to install
 tools/download.sh                 # precise mode (recommended), about 82 GB; --fast for fast mode, about 68 GB
 ```

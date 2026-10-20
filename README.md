@@ -1,156 +1,131 @@
-# Glyd Condor
+# Condor
 
-Qwen3.8-Flash-Next (180B params, MoE) running on one 12-16 GB NVIDIA card + 32-64 GB RAM, on Linux or Windows. Uses our own engine and our own
-compressed weights. Free for personal use.
+Qwen3.8-Flash-Next (180B, MoE) on one 12-16 GB NVIDIA GPU with 32-64 GB of RAM, on Linux or Windows. Our own engine and our own
+compressed weights. OpenAI- and Anthropic-compatible APIs, a chat page, MCP. Free for personal use. More Flash-class models will come here.
 
 ![Star Drift, a space shooter the model wrote in one prompt](docs/media/star-drift.gif)
 
-That game was written by the model in one prompt on my 4080 SUPER, unedited. It doesn't work every time: 3 of 6 tries were playable in
-precise mode. All 6 are in [examples/star-drift](examples/star-drift), the broken ones included.
+The model wrote that game in one prompt on my 4080 SUPER, unedited. 3 of 6 tries were playable in precise mode; all 6 are in
+[examples/star-drift](examples/star-drift), broken ones included.
 
-## Why this exists
+## How it works, in short
 
-I wanted big MoE models running at home on a normal gaming PC, not a server. The usual route is a quant file plus a general-purpose
-engine. I went the other way and built the compression and the engine together, so each one can assume things about the other:
+- The engine knows which experts the model routes to. The busy ones sit on the GPU, the rest in RAM; the CPU computes the misses while
+  the GPU works on the layer.
+- Experts are compressed by use: busy ones keep more bits.
+- The model's own draft head guesses the next token and the big model checks it in the same pass.
+- Long prompts go through the model a layer at a time, so a 32K prompt doesn't blow up memory.
 
-- The engine knows which experts the model actually routes to. The busy ones live on the GPU, the rest stay in RAM, and the CPU computes
-  those at the same time as the GPU works.
-- The experts are compressed by how often they get used. Busy experts keep more bits, rarely used ones get fewer.
-- The model's own small draft head guesses the next token and the big model checks it in the same pass (about 1.9 tokens per step).
-- Long prompts go through the model one layer at a time, so a 32K prompt doesn't blow up memory.
-
-More detail: [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md).
-
-This is the first big model I'm releasing on it. The same engine runs other models (Nemotron, Qwen3.8-27B and more), and Gemma 4 is
-next.
+Details: [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md).
 
 ## Numbers
 
-My machine: RTX 4080 SUPER 16 GB, Ryzen 9 7950X3D, 64 GB RAM, Ubuntu 26.04.
+RTX 4080 SUPER 16 GB, Ryzen 9 7950X3D, 64 GB RAM, Ubuntu 26.04. Greedy, thinking off, `bench/compare.py`.
 
 ```
-                                     precise         best            fast
-experts, avg bits/weight             ~3.0            ~3.4            ~2.1
+                                     precise         best            fast (v0.2.2)
+experts, avg bits/weight             ~3.0            ~3.4            ~2.0
 attention + rest                     6 bit           6 bit           4-5 bit
-KV cache                             bf16            bf16            bf16
-download                             82 GB           89 GB           68 GB
-KL divergence vs bf16 (wikitext-2)   0.22            0.165           0.53
+download                             82 GB           89 GB           66 GB
+KL divergence vs bf16 (wikitext-2)   0.22            0.165           0.39
 
-writing, short / 4K / 30K prompt     118 / 110 / 96  104 / 92 / 97   145 / 137 / 156 tok/s
-greedy, short prompt (best case)     ~130 tok/s      ~105 tok/s      ~160 tok/s
-read a 30K-token prompt              7.5 s           7.5 s           7.3 s
-read a 261K-token prompt             -               -               66 s
+writing, short / 4K / 30K prompt     118 / 110 / 96  104 / 92 / 97   124 / 116 / 125 tok/s
+greedy, short prompt (best case)     ~130 tok/s      ~105 tok/s      ~169 tok/s
+read a 30K-token prompt              7.5 s           7.5 s           7.4 s
 
-GSM8K   (150 q, Inspect AI)          148/150         149/150         150/150
-MMLU-Pro (150 q, Inspect AI)         126/150         128/150         118/150
+GSM8K   (150 q, Inspect AI)          148/150         149/150         149/150
+MMLU-Pro (150 q, Inspect AI)         126/150         128/150         121/150
 ```
 
-Benchmarks were run with thinking off and greedy decoding (bench/compare.py). GSM8K is mostly a sanity check that compression didn't
-break reasoning; MMLU-Pro tells you more. In v0.1 the one-shot game test came out 3 of 6 playable in precise mode and 1 of 6 in fast.
-Logs are in [results/](results), the scripts in [bench/](bench). Also tested on a cloud A10 (24 GB) and, on Windows, an L4 (24 GB).
+Fast was measured on 2026-10-19 on this build; precise and best in October's earlier runs (v0.2.0, v0.2.1). GSM8K is a sanity check that
+compression didn't break reasoning; MMLU-Pro says more. Logs in [results/](results), scripts in
+[bench/](bench). Also tested on a cloud A10 (24 GB) and, on Windows, an L4 (24 GB).
 
-To measure your own PC: `tools/bench.sh` (about 5 min). It prints a block at the end to paste into a "Bench result" issue.
-
-### Compare on your own machine
-
-I don't publish comparisons with other software. If you want one, `bench/compare.py` runs the same prompts and the same GSM8K /
-MMLU-Pro questions against any OpenAI-compatible server and prints one block. Run it against this server, then against whatever
-you use now, on the same computer, one at a time:
-
-```sh
-python3 bench/compare.py --url http://127.0.0.1:8080 --model qwen3.8-flash-next --note "precise"
-python3 bench/compare.py --url http://127.0.0.1:PORT --model NAME --note "what it is and how you started it"
-```
-
-Speed is measured on the client side from the stream (time to the first token, then tokens per second), on a short, a ~4K and a
-~30K prompt. Add `--speed-only` to skip the questions (they take about an hour per server). Details in [bench/README.md](bench/README.md).
+Your own machine: `tools/bench.sh` (about 5 min) prints a block to paste into a "Bench result" issue. To compare with what you run now,
+`bench/compare.py` runs the same prompts and questions against any OpenAI-compatible server ([bench/README.md](bench/README.md)); I
+don't publish comparisons myself.
 
 ## What you need
 
-- NVIDIA RTX 30/40/50 series (or an Ampere+ workstation card) with 12 GB+ VRAM (16 GB recommended), driver 580+
-- 32 GB+ RAM: 64 GB for precise mode, fast mode is the one for 32 GB
-- A CPU that isn't slow. It matters about as much as the GPU: experts that miss the GPU cache are computed on the CPU, so an older few-core
-  CPU with DDR4 (say 8 Zen 2 cores, AVX2 only) can set the speed. One user measured about 70 ms a pass on that, against about 16 ms on a
-  16-core 7950X3D, with the GPU at 33%.
-- ~90 GB free disk (75 GB for fast mode, 96 GB for best), SSD strongly recommended
-- Linux x86-64, Ubuntu 22.04+ or similar (tested on 22.04 and 24.04), or Windows 10/11 x64 (see below). WSL is untested.
+- NVIDIA RTX 30/40/50 (or an Ampere+ workstation card), 12 GB+ VRAM (16 GB recommended), driver 580+.
+- 32 GB+ RAM. Precise and best want 64 GB; fast is the mode for 32 GB.
+- A decent CPU. Experts that miss the GPU cache run on it, so it matters about as much as the GPU: a 16-core 7950X3D does a pass in
+  ~16 ms, an 8-core Zen 2 with DDR4 in ~70 ms.
+- ~90 GB of free disk (73 GB for fast, 96 GB for best), on an SSD.
+- Linux x86-64 (tested on Ubuntu 22.04 and 24.04) or Windows 10/11 x64. WSL untested.
 
-Smaller machines, measured on my 4080 SUPER held back to look like them (fast mode, greedy, short prompt): 12 GB of VRAM about 150
-tok/s, 32 GB of RAM about 128, both together about 145. A 12 GB card like a 3060 has about half the 4080's memory bandwidth, so expect
-roughly half that. Not yet run on a real 12 GB card.
+12 GB cards and 32 GB of RAM: measured on my 4080 held back to those sizes, fast mode does about 145 tok/s on a short prompt. A 3060
+has half the 4080's bandwidth, so expect roughly half that. Not yet run on a real 12 GB card.
 
 ## Install
 
 ```sh
-git clone https://github.com/surya-koritala/glyd-condor && cd glyd-condor
+git clone https://github.com/surya-koritala/condor && cd condor
 ./setup.sh
 ```
 
-It checks your GPU/RAM/disk, installs the engine (no sudo), downloads the model (resumable, just rerun it if it stops), asks precise or
-fast and how much context, then opens the app at `http://127.0.0.1:8080`. Enter takes the defaults. Run `./setup.sh` again to start it
-next time; it won't download anything twice.
+It checks GPU, RAM and disk, installs the engine (no sudo), downloads the model (resumable: rerun if it stops), asks the mode and the
+context, and opens `http://127.0.0.1:8080`. Enter takes the defaults. Run it again to start next time; nothing downloads twice.
 
-On Windows (10/11 or Server 2022, x64, NVIDIA driver 580+), in PowerShell:
+Windows (PowerShell, NVIDIA driver 580+):
 
 ```powershell
-git clone https://github.com/surya-koritala/glyd-condor; cd glyd-condor
+git clone https://github.com/surya-koritala/condor; cd condor
 powershell -ExecutionPolicy Bypass -File setup.ps1
 ```
 
-Same steps and questions; `tools\download.ps1` and `tools\serve.ps1` (`-Fast` for fast mode) are the twins of the `.sh` scripts.
-Tested on one Windows machine, an AWS g6 (L4 24 GB, 8-core EPYC, 64 GB RAM, driver 581.80), clean install from the release files:
-the tests in `tests/` all pass in both modes, and `tools\bench.ps1` (fast) gives 47 tok/s chat, 36-42 on 4K-32K prompts. The L4 has
-about 40% of a 4080's memory bandwidth. Not yet tested on a GeForce card under Windows, or under WSL2.
+`tools\download.ps1` and `tools\serve.ps1` (`-Fast`, `-Best`) are the twins of the `.sh` scripts. Tested on one Windows machine so
+far (an AWS L4, 64 GB RAM): clean install, `tests/` passing, 47 tok/s chat in fast mode (the L4 has 40% of a 4080's
+bandwidth). Not yet tested on a GeForce card under Windows or in WSL2.
 
-If you use an AI coding assistant, you can also just paste it this:
-`Set up https://github.com/surya-koritala/glyd-condor on this PC - follow docs/AI_SETUP.md`
+With an AI coding assistant: `Set up https://github.com/surya-koritala/condor on this PC - follow docs/AI_SETUP.md`.
 
-## Precise, best and fast
+## Modes
 
-Precise is the default and I'd use it for code: long programs come out right a lot more often. Best (v0.2.1) keeps more bits in the
-experts: it's the closest to the original (KL 0.165 vs 0.22), about 10% slower on short prompts and 7 GB more to download. It also
-wants 64 GB of RAM. Fast is 15-20% quicker than precise and fine for chat.
-To switch: `tools/download.sh --best` (or `--fast`), then `tools/serve.sh --best`. Drop the flag to go back to precise.
+- **precise** (default): the one for code; long programs come out right far more often.
+- **best**: closest to the original (KL 0.165), about 10% slower, 7 GB more; 64 GB of RAM.
+- **fast**: 15-20% quicker than precise, 66 GB, runs with 32 GB of RAM. v0.2.2 packs its experts a new way at the same size: KL
+  0.53 -> 0.39, top-1 agreement with the original 79% -> 83%. Two of the 19 tool-call tests in `tests/` fail with it (see the CHANGELOG).
+
+Switch: `tools/download.sh --best` (or `--fast`), then `tools/serve.sh --best`. No flag means precise.
 
 ## Using it
 
-- Browser: `http://127.0.0.1:8080`. Chat (renders tables, code, diagrams, and runs the HTML/games the model writes), a live monitor of
-  GPU/CPU/RAM, and an About page.
-- OpenAI-compatible API: `http://127.0.0.1:8080/v1`, any key and any model name.
-- Anthropic-compatible API: `http://127.0.0.1:8080/v1/messages`, e.g. `ANTHROPIC_BASE_URL=http://127.0.0.1:8080 claude`.
-- Other apps and agent frameworks, and what's tested with tool calls: [docs/CLIENTS.md](docs/CLIENTS.md).
-- MCP: `claude mcp add glyd -- ~/.glyd-qwen-3.8-flash/bin/glyd-engine qwenmcp --repo /path/to/glyd-condor`
-- Thinking is off by default (fastest). Turn it on in chat settings or with `reasoning_effort`.
-- Context up to 262,144 tokens. Follow-up messages reuse the conversation, so they start in under a second.
+- Chat: `http://127.0.0.1:8080`. Renders tables, code and diagrams, runs the HTML the model writes, shows GPU/CPU/RAM live.
+- OpenAI-compatible API at `http://127.0.0.1:8080/v1` (any key, any model name); Anthropic-compatible at `/v1/messages`, e.g.
+  `ANTHROPIC_BASE_URL=http://127.0.0.1:8080 claude`.
+- Agent frameworks and tool calls, what's tested: [docs/CLIENTS.md](docs/CLIENTS.md).
+- MCP: `claude mcp add glyd -- ~/.glyd-qwen-3.8-flash/bin/glyd-engine qwenmcp --repo /path/to/condor`
+- Thinking is off by default; turn it on in chat settings or with `reasoning_effort`.
+- Context up to 262,144 tokens; follow-ups reuse the conversation and start in under a second.
 
 ## Known limits
 
-- Text only. The base model's vision part isn't supported yet.
-- NVIDIA only, 12 GB minimum. No macOS or AMD.
-- One request at a time, and others queue.
-- Fast mode is noticeably weaker on long code.
-- If you don't have enough free RAM, it gets very slow and the disk gets busy. Close the browser tabs eating your RAM.
+- Text only; the model's vision part isn't wired up yet (#13).
+- NVIDIA only, 12 GB minimum; no macOS or AMD (#8, AMD in progress).
+- One request at a time; others queue (#9, in progress).
+- Fast mode is weaker on long code.
+- Short on free RAM, it gets slow and the disk gets busy: close what's eating RAM.
 
 ## Troubleshooting
 
 - Download stopped: rerun `./setup.sh`.
-- "No NVIDIA driver found" / "580 or newer is needed": update the driver (Ubuntu: `sudo apt install nvidia-driver-595`), reboot.
-- Port 8080 in use: it's probably already running, or use `tools/serve.sh 8090`.
-- Download sits at 0 MB/s, then "Connection reset by peer": on some networks IPv6 to Hugging Face's CDN is broken while IPv4 works. Since v0.2.0
-  the engine switches to IPv4 by itself when that happens; `GLYD_IPV4=1 ./setup.sh` forces IPv4 from the start.
-- Slower than the numbers above: check the CPU (see What you need), and the context. On a 16 GB card a bigger `GLYD_CTX` takes VRAM from the expert
-  cache, so it can be slower: one user saw 11-15% slower at 131,072 than at 32,768 (the default).
+- "No NVIDIA driver found" or "580 or newer is needed": update the driver (Ubuntu: `sudo apt install nvidia-driver-595`), reboot.
+- Port 8080 in use: it's probably already running; or `tools/serve.sh 8090`.
+- Download stuck at 0 MB/s then "Connection reset by peer": IPv6 to the Hub's CDN is broken on some networks. The engine falls back to
+  IPv4 by itself; `GLYD_IPV4=1 ./setup.sh` forces it from the start.
+- Slower than the numbers above: check the CPU (above) and the context: on a 16 GB card a bigger `GLYD_CTX` takes VRAM from the expert
+  cache (one user saw 11-15% slower at 131,072 than at the default 32,768).
 
-Anything else: open an [issue](https://github.com/surya-koritala/glyd-condor/issues) with what it printed. Security stuff goes
-privately via [SECURITY.md](SECURITY.md).
+Anything else: open an [issue](https://github.com/surya-koritala/condor/issues) with what it printed. Security: [SECURITY.md](SECURITY.md).
 
 ## License
 
-- Model: [Qwen3.8-Flash-Next](https://huggingface.co/Qwen/Qwen3.8-Flash-Next) by the Qwen team, under its license. The compressed
+- Model: [Qwen3.8-Flash-Next](https://huggingface.co/Qwen/Qwen3.8-Flash-Next) by the Qwen team, under its license; the compressed
   weights on [Hugging Face](https://huggingface.co/glyd/Qwen3.8-Flash-Next-hummingbird) carry the same license.
-- This repo (setup scripts, chat app, benchmarks, docs): [Apache 2.0](LICENSE).
-- The engine ships compiled in [releases](https://github.com/surya-koritala/glyd-condor/releases) under
-  [BUSL 1.1](ENGINE-LICENSE): free for personal, research and non-commercial use. Commercial use needs a license
-  (suryakoritala@getglyd.com). Each version turns Apache 2.0 four years after release.
+- This repo (scripts, chat app, benchmarks, docs): [Apache 2.0](LICENSE).
+- The engine ships compiled in [releases](https://github.com/surya-koritala/condor/releases) under [BUSL 1.1](ENGINE-LICENSE): free for
+  personal, research and non-commercial use; commercial use needs a license (suryakoritala@getglyd.com). Each version turns Apache 2.0
+  four years after release.
 
-PRs welcome, see [CONTRIBUTING.md](CONTRIBUTING.md). Thanks to the Qwen team for open-weighting this model.
+PRs welcome: [CONTRIBUTING.md](CONTRIBUTING.md). Thanks to the Qwen team for open-weighting this model.

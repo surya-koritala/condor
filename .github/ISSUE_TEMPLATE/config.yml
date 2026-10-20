@@ -1,5 +1,5 @@
 blank_issues_enabled: true
 contact_links:
   - name: Security problem
-    url: https://github.com/surya-koritala/glyd-condor/blob/main/SECURITY.md
+    url: https://github.com/surya-koritala/condor/blob/main/SECURITY.md
     about: Please report security problems privately.

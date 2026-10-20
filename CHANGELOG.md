@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.2.2
+
+- Fast mode is closer to the original at the same size: its experts are packed a new way, still 2 bits a weight. KL divergence vs the
+  original bf16 (wikitext-2, 32 x 512): 0.53 -> 0.39, top-1 79% -> 83%. On a mixed text set (code, docs, five languages, an agent
+  transcript), over the original's 64 most likely tokens: 0.397 -> 0.295, top-1 78% -> 81%. GSM8K 149/150, MMLU-Pro 121/150 (the v0.2.1
+  experts on the same engine, the same night: 147 and 124). Writing after a short / 4K / 30K prompt: 124 / 116 / 125 tok/s, vs
+  120 / 117 / 141 with the v0.2.1 experts on the same night; prompts are read at the same speed.
+- The fast experts are a new download, `fast/` (29 GB): `./setup.sh` fetches them, or `tools/download.sh --fast`; the old `pack/` folder
+  can be deleted after. Engines before v0.2.2 keep using `pack/`. 66 GB in all for fast mode (was 68).
+- Known: with the new fast experts two of the 19 tool-call tests in `tests/test_agents.py` fail (a forced tool choice gets a second call;
+  the 12-round tool loop overruns), 19 of 19 with precise and best. On the list for v0.2.3.
+- The project is Condor and the repository is surya-koritala/condor (old links redirect). More Flash-class models will come here.
+- Precise and best are unchanged.
+
 ## 0.2.1
 
 - Best mode (`--best`, `-Best` on Windows; setup asks): about 30% of the experts at 4 bits, the rest at 3, calibrated like precise.

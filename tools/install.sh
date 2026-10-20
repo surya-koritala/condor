@@ -5,7 +5,7 @@
 set -euo pipefail
 HERE=$(cd "$(dirname "$0")/.." && pwd)
 H=${GLYD_QWEN:-$HOME/.glyd-qwen-3.8-flash}; mkdir -p "$H/bin" "$H/lib"
-REPO=surya-koritala/glyd-condor; VER=${1:-latest}
+REPO=surya-koritala/condor; VER=${1:-latest}
 if [ "$VER" = latest ]; then BASE=https://github.com/$REPO/releases/latest/download; else BASE=https://github.com/$REPO/releases/download/$VER; fi
 BASE=${GLYD_RELEASE_URL:-$BASE}   # (a mirror, or file:///dir for a test before a release)
 command -v nvidia-smi > /dev/null || { echo "no nvidia-smi: an NVIDIA driver is needed" >&2; exit 1; }

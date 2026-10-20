@@ -7,7 +7,7 @@ H=${GLYD_QWEN:-$HOME/.glyd-qwen-3.8-flash}; YES=0; [ "${1:-}" = --yes ] && YES=1
 say() { printf '\033[1m%s\033[0m\n' "$*"; }
 ask() { local q=$1 d=$2 a; if [ "$YES" = 1 ]; then echo "$d"; return; fi; read -r -p "$q [$d]: " a < /dev/tty; echo "${a:-$d}"; }
 
-say "Glyd Condor: Qwen3.8-Flash-Next (Hummingbird level) on your GPU"
+say "Condor: Qwen3.8-Flash-Next (Hummingbird level) on your GPU"
 command -v nvidia-smi > /dev/null || { echo "No NVIDIA driver found (nvidia-smi). Install the NVIDIA driver 580 or newer, then run this again."; exit 1; }
 read -r GPU VRAM DRV < <(nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv,noheader,nounits | head -1 | awk -F', ' '{gsub(/ /,"_",$1); print $1, $2, $3}')
 RAM=$(free -g | awk '/^Mem:/ {print $2}'); DISK=$(df -BG --output=avail "$HOME" | tail -1 | tr -dc 0-9)
@@ -17,14 +17,14 @@ echo "  GPU ${GPU//_/ }, $(((VRAM + 512) / 1024)) GB, driver $DRV;  RAM $RAM GiB
 [ "${DRV%%.*}" -ge 580 ] || { echo "  The NVIDIA driver is $DRV; 580 or newer is needed. On Ubuntu: sudo apt install nvidia-driver-595 (or sudo ubuntu-drivers install), reboot, then run this again."; exit 1; }
 
 # (the engine again when the latest release is not the installed one: these scripts may need it; offline, the installed one stays)
-NEW=$(curl -fsSL --max-time 10 "${GLYD_RELEASE_URL:-https://github.com/surya-koritala/glyd-condor/releases/latest/download}/SHA256SUMS" 2> /dev/null || true)
+NEW=$(curl -fsSL --max-time 10 "${GLYD_RELEASE_URL:-https://github.com/surya-koritala/condor/releases/latest/download}/SHA256SUMS" 2> /dev/null || true)
 if [ ! -x "$H/bin/glyd-engine" ] || { [ -n "$NEW" ] && [ "$NEW" != "$(cat "$H/SHA256SUMS" 2> /dev/null)" ]; }; then
   say "Installing the engine (about 50 MB)"; bash "$HERE/tools/install.sh"
 fi
 . "$H/env.sh"
 DEF=precise; [ "$RAM" -ge 60 ] || DEF=fast
 MODE=$(ask "Mode: precise (accurate, good for code; wants 64 GB of RAM), best (more accurate still, about 10% slower, 7 GB more to download; 64 GB of RAM) or fast (quicker answers, a smaller download)" $DEF)
-case $MODE in precise) PART=precise; GB=82;; best) PART=best; GB=89;; fast) PART=pack; GB=68;; *) echo "Answer precise, best or fast."; exit 1;; esac
+case $MODE in precise) PART=precise; GB=82;; best) PART=best; GB=89;; fast) PART=fast; GB=66;; *) echo "Answer precise, best or fast."; exit 1;; esac
 F=; [ "$MODE" = precise ] || F=--$MODE
 if [ ! -f "$H/hf/model/config.json" ] || [ ! -e "$H/hf/$PART" ]; then
   [ "$DISK" -ge $((GB + 7)) ] || { echo "About $((GB + 7)) GB of free disk is needed for $MODE mode; $DISK GB is free."; exit 1; }
