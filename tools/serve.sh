@@ -15,6 +15,8 @@ case $F in
   --best) PACK=$DIR/best; MODE="--no-side --layout i6 --hi i6";;
   *) PACK=$DIR/precise; MODE="--precise --layout i6 --hi i6";;
 esac
+# (the 3- and 4-bit experts are precise-v2 and best-v2: those where downloaded, else the earlier ones)
+[ "$F" != --fast ] && [ -e "$PACK-v2" ] && PACK=$PACK-v2
 [ -e "$PACK" ] || { echo "$PACK is missing: run tools/download.sh${F:+ $F} first." >&2; exit 1; }
 exec "$GLYD_ENGINE" qwenserve "$DIR/model" "$PACK" $MODE --ctx "${GLYD_CTX:-32768}" --port "${1:-8080}" --page "$HERE" \
   ${GLYD_USERS:+--users "$GLYD_USERS"} ${GLYD_GPUS:+--gpus "$GLYD_GPUS"}
