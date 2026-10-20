@@ -17,7 +17,7 @@ echo "  GPU ${GPU//_/ }, $(((VRAM + 512) / 1024)) GB, driver $DRV;  RAM $RAM GiB
 [ "${DRV%%.*}" -ge 580 ] || { echo "  The NVIDIA driver is $DRV; 580 or newer is needed. On Ubuntu: sudo apt install nvidia-driver-595 (or sudo ubuntu-drivers install), reboot, then run this again."; exit 1; }
 
 # (the engine again when the latest release is not the installed one: these scripts may need it; offline, the installed one stays)
-NEW=$(curl -fsSL --max-time 10 "${GLYD_RELEASE_URL:-https://github.com/surya-koritala/glyd-condor/releases/latest/download}/SHA256SUMS" 2> /dev/null || true)
+NEW=$(curl -fsSL --max-time 10 "${GLYD_RELEASE_URL:-https://github.com/surya-koritala/condor/releases/latest/download}/SHA256SUMS" 2> /dev/null || true)
 if [ ! -x "$H/bin/glyd-engine" ] || { [ -n "$NEW" ] && [ "$NEW" != "$(cat "$H/SHA256SUMS" 2> /dev/null)" ]; }; then
   say "Installing the engine (about 50 MB)"; bash "$HERE/tools/install.sh"
 fi

@@ -82,7 +82,7 @@ roughly half that. Not yet run on a real 12 GB card.
 ## Install
 
 ```sh
-git clone https://github.com/surya-koritala/glyd-condor && cd glyd-condor
+git clone https://github.com/surya-koritala/condor && cd condor
 ./setup.sh
 ```
 
@@ -93,7 +93,7 @@ next time; it won't download anything twice.
 On Windows (10/11 or Server 2022, x64, NVIDIA driver 580+), in PowerShell:
 
 ```powershell
-git clone https://github.com/surya-koritala/glyd-condor; cd glyd-condor
+git clone https://github.com/surya-koritala/condor; cd condor
 powershell -ExecutionPolicy Bypass -File setup.ps1
 ```
 
@@ -103,7 +103,7 @@ the tests in `tests/` all pass in both modes, and `tools\bench.ps1` (fast) gives
 about 40% of a 4080's memory bandwidth. Not yet tested on a GeForce card under Windows, or under WSL2.
 
 If you use an AI coding assistant, you can also just paste it this:
-`Set up https://github.com/surya-koritala/glyd-condor on this PC - follow docs/AI_SETUP.md`
+`Set up https://github.com/surya-koritala/condor on this PC - follow docs/AI_SETUP.md`
 
 ## Precise, best and fast
 
@@ -119,7 +119,7 @@ To switch: `tools/download.sh --best` (or `--fast`), then `tools/serve.sh --best
 - OpenAI-compatible API: `http://127.0.0.1:8080/v1`, any key and any model name.
 - Anthropic-compatible API: `http://127.0.0.1:8080/v1/messages`, e.g. `ANTHROPIC_BASE_URL=http://127.0.0.1:8080 claude`.
 - Other apps and agent frameworks, and what's tested with tool calls: [docs/CLIENTS.md](docs/CLIENTS.md).
-- MCP: `claude mcp add glyd -- ~/.glyd-qwen-3.8-flash/bin/glyd-engine qwenmcp --repo /path/to/glyd-condor`
+- MCP: `claude mcp add glyd -- ~/.glyd-qwen-3.8-flash/bin/glyd-engine qwenmcp --repo /path/to/condor`
 - Thinking is off by default (fastest). Turn it on in chat settings or with `reasoning_effort`.
 - Context up to 262,144 tokens. Follow-up messages reuse the conversation, so they start in under a second.
 
@@ -141,7 +141,7 @@ To switch: `tools/download.sh --best` (or `--fast`), then `tools/serve.sh --best
 - Slower than the numbers above: check the CPU (see What you need), and the context. On a 16 GB card a bigger `GLYD_CTX` takes VRAM from the expert
   cache, so it can be slower: one user saw 11-15% slower at 131,072 than at 32,768 (the default).
 
-Anything else: open an [issue](https://github.com/surya-koritala/glyd-condor/issues) with what it printed. Security stuff goes
+Anything else: open an [issue](https://github.com/surya-koritala/condor/issues) with what it printed. Security stuff goes
 privately via [SECURITY.md](SECURITY.md).
 
 ## License
@@ -149,7 +149,7 @@ privately via [SECURITY.md](SECURITY.md).
 - Model: [Qwen3.8-Flash-Next](https://huggingface.co/Qwen/Qwen3.8-Flash-Next) by the Qwen team, under its license. The compressed
   weights on [Hugging Face](https://huggingface.co/glyd/Qwen3.8-Flash-Next-hummingbird) carry the same license.
 - This repo (setup scripts, chat app, benchmarks, docs): [Apache 2.0](LICENSE).
-- The engine ships compiled in [releases](https://github.com/surya-koritala/glyd-condor/releases) under
+- The engine ships compiled in [releases](https://github.com/surya-koritala/condor/releases) under
   [BUSL 1.1](ENGINE-LICENSE): free for personal, research and non-commercial use. Commercial use needs a license
   (suryakoritala@getglyd.com). Each version turns Apache 2.0 four years after release.
 

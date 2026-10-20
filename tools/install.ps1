@@ -6,7 +6,7 @@ $ErrorActionPreference = 'Stop'
 $Here = Split-Path -Parent $PSScriptRoot
 $H = if ($env:GLYD_QWEN) { $env:GLYD_QWEN } else { Join-Path $HOME '.glyd-qwen-3.8-flash' }
 New-Item -ItemType Directory -Force (Join-Path $H 'bin') | Out-Null
-$Repo = 'surya-koritala/glyd-condor'
+$Repo = 'surya-koritala/condor'
 $Base = if ($Version -eq 'latest') { "https://github.com/$Repo/releases/latest/download" } else { "https://github.com/$Repo/releases/download/$Version" }
 if ($env:GLYD_RELEASE_URL) { $Base = $env:GLYD_RELEASE_URL }   # (a mirror, or a local folder for a test before a release)
 if (-not (Get-Command nvidia-smi.exe -ErrorAction SilentlyContinue)) { throw 'no nvidia-smi: an NVIDIA driver is needed' }
