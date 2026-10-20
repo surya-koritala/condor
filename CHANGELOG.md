@@ -2,8 +2,8 @@
 
 ## 0.2.3 (not released yet)
 
-- Images: PNG and JPEG in OpenAI `image_url` parts (base64 or a URL) and Anthropic image blocks, up to 1,024 tokens an image by
-  default (`--image-pixels`). Our own decoder, no image library; the image encoder runs on the GPU and matches the reference model
+- Images: PNG and JPEG in OpenAI `image_url` parts (base64, or a URL on a public host: the server won't fetch from this computer or
+  its network on a client's behalf) and Anthropic image blocks, up to 1,024 tokens an image by default (`--image-pixels`). Our own decoder, no image library; the image encoder runs on the GPU and matches the reference model
   within bf16 noise. On a 4080 SUPER an image adds 0.3-2 s to the prompt; text speed is unchanged. `tests/test_vision.py`. Not yet:
   video, a camera's orientation tag, uploads on the chat page.
 - Up to 4 requests at once (`GLYD_USERS`, 1 to 8), each streaming from the start; past that they wait in order. One user's speed is

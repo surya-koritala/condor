@@ -100,8 +100,8 @@ Switch: `tools/download.sh --best` (or `--fast`), then `tools/serve.sh --best`. 
   `ANTHROPIC_BASE_URL=http://127.0.0.1:8080 claude`.
 - Agent frameworks and tool calls, what's tested: [docs/CLIENTS.md](docs/CLIENTS.md).
 - MCP: `claude mcp add glyd -- ~/.glyd-qwen-3.8-flash/bin/glyd-engine qwenmcp --repo /path/to/condor`
-- Images: PNG or JPEG in OpenAI `image_url` parts (base64 or a URL) or Anthropic image blocks, up to 1,024 tokens an image by
-  default. An image adds 0.3-2 s to the prompt on a 4080 SUPER; text speed is unchanged.
+- Images: PNG or JPEG in OpenAI `image_url` parts (base64, or a URL on a public host) or Anthropic image blocks, up to 1,024 tokens
+  an image by default. An image adds 0.3-2 s to the prompt on a 4080 SUPER; text speed is unchanged.
 - Several users: 4 requests at once by default, each streaming from the start (`GLYD_USERS=N tools/serve.sh`, 1 to 8).
 - Thinking is off by default; turn it on in chat settings or with `reasoning_effort`.
 - Context up to 262,144 tokens; follow-ups reuse the conversation and start in under a second.
