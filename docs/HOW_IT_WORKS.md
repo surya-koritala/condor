@@ -21,11 +21,11 @@ top 50%                              ~87%
 ```
 
 So the bits go where the use is. In precise mode, the busiest experts in each layer keep the most bits (4, 3 or 2 bits, from most used
-to least). Fast mode keeps every expert in the smallest format. On average:
+to least). Fast mode keeps every expert at 2 bits a weight (since v0.2.2 those bits are packed to stay closer to the original). On average:
 
 ```
                                      precise         fast
-experts, avg bits/weight             ~2.7            ~2.1
+experts, avg bits/weight             ~2.7            ~2.0
 attention + rest                     4-5 bit         4-5 bit
 ```
 

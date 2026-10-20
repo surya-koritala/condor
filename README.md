@@ -30,10 +30,10 @@ My machine: RTX 4080 SUPER 16 GB, Ryzen 9 7950X3D, 64 GB RAM, Ubuntu 26.04.
 
 ```
                                      precise         best            fast
-experts, avg bits/weight             ~3.0            ~3.4            ~2.1
+experts, avg bits/weight             ~3.0            ~3.4            ~2.0
 attention + rest                     6 bit           6 bit           4-5 bit
 KV cache                             bf16            bf16            bf16
-download                             82 GB           89 GB           68 GB
+download                             82 GB           89 GB           66 GB
 KL divergence vs bf16 (wikitext-2)   0.22            0.165           0.53
 
 writing, short / 4K / 30K prompt     118 / 110 / 96  104 / 92 / 97   145 / 137 / 156 tok/s
@@ -72,7 +72,7 @@ Speed is measured on the client side from the stream (time to the first token, t
 - A CPU that isn't slow. It matters about as much as the GPU: experts that miss the GPU cache are computed on the CPU, so an older few-core
   CPU with DDR4 (say 8 Zen 2 cores, AVX2 only) can set the speed. One user measured about 70 ms a pass on that, against about 16 ms on a
   16-core 7950X3D, with the GPU at 33%.
-- ~90 GB free disk (75 GB for fast mode, 96 GB for best), SSD strongly recommended
+- ~90 GB free disk (73 GB for fast mode, 96 GB for best), SSD strongly recommended
 - Linux x86-64, Ubuntu 22.04+ or similar (tested on 22.04 and 24.04), or Windows 10/11 x64 (see below). WSL is untested.
 
 Smaller machines, measured on my 4080 SUPER held back to look like them (fast mode, greedy, short prompt): 12 GB of VRAM about 150
