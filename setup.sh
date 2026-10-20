@@ -24,7 +24,7 @@ fi
 . "$H/env.sh"
 DEF=precise; [ "$RAM" -ge 60 ] || DEF=fast
 MODE=$(ask "Mode: precise (accurate, good for code; wants 64 GB of RAM), best (more accurate still, about 10% slower, 7 GB more to download; 64 GB of RAM) or fast (quicker answers, a smaller download)" $DEF)
-case $MODE in precise) PART=precise; GB=82;; best) PART=best; GB=89;; fast) PART=pack; GB=68;; *) echo "Answer precise, best or fast."; exit 1;; esac
+case $MODE in precise) PART=precise; GB=82;; best) PART=best; GB=89;; fast) PART=fast; GB=66;; *) echo "Answer precise, best or fast."; exit 1;; esac
 F=; [ "$MODE" = precise ] || F=--$MODE
 if [ ! -f "$H/hf/model/config.json" ] || [ ! -e "$H/hf/$PART" ]; then
   [ "$DISK" -ge $((GB + 7)) ] || { echo "About $((GB + 7)) GB of free disk is needed for $MODE mode; $DISK GB is free."; exit 1; }

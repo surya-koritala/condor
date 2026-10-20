@@ -21,7 +21,7 @@ if (-not (Test-Path (Join-Path $H 'bin\glyd-engine.exe'))) { Say 'Installing the
 . (Join-Path $H 'env.ps1')
 $def = if ($ram -lt 60) { 'fast' } else { 'precise' }
 $mode = Ask 'Mode: precise (accurate, good for code; wants 64 GB of RAM), best (more accurate still, about 10% slower, 7 GB more to download; 64 GB of RAM) or fast (quicker answers, a smaller download)' $def
-switch ($mode) { 'precise' { $part = 'precise'; $gb = 82 } 'best' { $part = 'best'; $gb = 89 } 'fast' { $part = 'pack'; $gb = 68 } default { throw 'Answer precise, best or fast.' } }
+switch ($mode) { 'precise' { $part = 'precise'; $gb = 82 } 'best' { $part = 'best'; $gb = 89 } 'fast' { $part = 'fast'; $gb = 66 } default { throw 'Answer precise, best or fast.' } }
 if (-not (Test-Path (Join-Path $H 'hf\model\config.json')) -or -not (Test-Path (Join-Path $H "hf\$part"))) {
     if ($disk -lt $gb + 7) { throw "About $($gb + 7) GB of free disk is needed for $mode mode; $disk GB is free." }
     Say "Downloading the model (about $gb GB; it resumes if it stops)"

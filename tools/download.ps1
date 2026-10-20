@@ -1,5 +1,5 @@
 # The model from Hugging Face (no account needed), glyd/Qwen3.8-Flash-Next-hummingbird: model\ (Qwen's tokenizer and configs, and the weights
-# outside the experts, 37 GB) and the experts for one mode: precise\ (45 GB, the default), with -Fast pack\ (31 GB), with -Best best\ (52 GB). The files go to the
+# outside the experts, 37 GB) and the experts for one mode: precise\ (45 GB, the default), with -Fast fast\ (29 GB), with -Best best\ (52 GB). The files go to the
 # Hugging Face cache (~\.cache\huggingface, or $env:HF_HUB_CACHE), which other tools share; DIR gets folder links to them. It resumes if it stops.
 #   powershell -ExecutionPolicy Bypass -File tools\download.ps1 [-Fast | -Best] [DIR]        (default DIR $env:GLYD_QWEN\hf)
 param([switch]$Fast, [switch]$Best, [string]$Dir = '')

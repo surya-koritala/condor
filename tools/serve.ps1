@@ -6,7 +6,7 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $(if ($env:GLYD_QWEN) { $env:GLYD_QWEN } else { Join-Path $HOME '.glyd-qwen-3.8-flash' }) 'env.ps1')
 $dir = if ($env:GLYD_HF) { $env:GLYD_HF } else { Join-Path $env:GLYD_QWEN 'hf' }
 # (precise and best keep the always-on matrices at six bits: their calibrated experts were packed for that)
-if ($Fast) { $pack = Join-Path $dir 'pack'; $mode = @(); $f = ' -Fast' }
+if ($Fast) { $pack = Join-Path $dir 'fast'; $mode = @(); $f = ' -Fast' }
 elseif ($Best) { $pack = Join-Path $dir 'best'; $mode = @('--no-side', '--layout', 'i6', '--hi', 'i6'); $f = ' -Best' }
 else { $pack = Join-Path $dir 'precise'; $mode = @('--precise', '--layout', 'i6', '--hi', 'i6'); $f = '' }
 if (-not (Test-Path $pack)) { throw "$pack is missing: run tools\download.ps1$f first." }

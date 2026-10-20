@@ -9,7 +9,7 @@ DIR=${GLYD_HF:-$GLYD_QWEN/hf}
 F=; case "${1:-}" in --fast | --best) F=$1; shift;; esac
 # (precise and best keep the always-on matrices at six bits: their calibrated experts were packed for that)
 case $F in
-  --fast) PACK=$DIR/pack; MODE=;;
+  --fast) PACK=$DIR/fast; MODE=;;
   --best) PACK=$DIR/best; MODE="--no-side --layout i6 --hi i6";;
   *) PACK=$DIR/precise; MODE="--precise --layout i6 --hi i6";;
 esac
