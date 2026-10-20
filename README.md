@@ -1,7 +1,7 @@
-# Glyd Condor
+# Condor
 
-Qwen3.8-Flash-Next (180B params, MoE) running on one 12-16 GB NVIDIA card + 32-64 GB RAM, on Linux or Windows. Uses our own engine and our own
-compressed weights. Free for personal use.
+Flash-class models on one 12-16 GB NVIDIA card + 32-64 GB RAM, on Linux or Windows. The first is Qwen3.8-Flash-Next (180B params, MoE);
+more will follow here. Runs on the Glyd engine with Glyd's compressed weights, both ours. Free for personal use.
 
 ![Star Drift, a space shooter the model wrote in one prompt](docs/media/star-drift.gif)
 

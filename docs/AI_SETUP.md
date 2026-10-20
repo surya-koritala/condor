@@ -1,4 +1,4 @@
-# Setting up Glyd Condor (Qwen3.8-Flash-Next): steps for an AI assistant
+# Setting up Condor (Qwen3.8-Flash-Next): steps for an AI assistant
 
 You are setting up Glyd's Qwen3.8-Flash-Next (Hummingbird level) for a user: Qwen3.8-Flash-Next running on their own NVIDIA GPU, with a chat page and an OpenAI- and
 Anthropic-compatible API. Follow these steps in order, and tell the user what you find at each one.
