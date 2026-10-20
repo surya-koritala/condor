@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Image input checks of a running server (tools/serve.sh): pictures drawn here, sent the ways the APIs take them (OpenAI image_url as a base64 data URL and as
-an http URL, Anthropic image blocks), each with a question whose answer is known; a second turn about an image already read. Standard library only.
+"""Image input checks of a running server (tools/serve.sh): pictures drawn here, sent the ways the APIs take them (OpenAI image_url as a base64 data URL,
+Anthropic image blocks), each with a question whose answer is known; a second turn about an image already read; an http URL on this computer refused
+(the server fetches image URLs from public hosts only). Standard library only.
    tests/test_vision.py [--url http://127.0.0.1:8080] [--save DIR]   (--save: the pictures as PNG files too)"""
 import argparse
 import base64
@@ -77,18 +78,22 @@ def main():
     check("counting", "3" in t or "three" in t.lower(), t)
     t, _ = ask(picture("seven", "What digit is drawn in this image? Answer with the digit only."))
     check("a digit", "7" in t, t)
-    # the same picture from an http URL this script serves
+    # an http URL on this computer: refused, not fetched (the server fetches image URLs from public hosts only, since any client can name one)
     class One(http.server.BaseHTTPRequestHandler):
         def do_GET(self):
-            self.send_response(200); self.send_header("Content-Type", "image/png"); self.end_headers(); self.wfile.write(pics["halves"])
+            self.server.hits += 1; self.send_response(200); self.send_header("Content-Type", "image/png"); self.end_headers(); self.wfile.write(pics["halves"])
 
         def log_message(self, *args):
             pass
-    srv = http.server.HTTPServer(("127.0.0.1", 0), One)
+    srv = http.server.HTTPServer(("127.0.0.1", 0), One); srv.hits = 0
     threading.Thread(target=srv.serve_forever, daemon=True).start()
-    t, _ = ask([{"type": "image_url", "image_url": {"url": f"http://127.0.0.1:{srv.server_port}/halves.png"}}, {"type": "text", "text": "What color is the right half of this image? Answer with one word."}])
+    try:
+        ask([{"type": "image_url", "image_url": {"url": f"http://127.0.0.1:{srv.server_port}/halves.png"}}, {"type": "text", "text": "What color is the right half of this image? Answer with one word."}])
+        status, msg = 200, "answered"
+    except urllib.error.HTTPError as e:
+        status, msg = e.code, e.read().decode(errors="replace")
     srv.shutdown()
-    check("http URL", "yellow" in t.lower(), t)
+    check("a local http URL is refused", status == 400 and "public" in msg and srv.hits == 0, f"{status} hits={srv.hits} {msg[:80]}")
     # two pictures in one message, in order
     t, _ = ask([{"type": "text", "text": "First picture:"}, {"type": "image_url", "image_url": {"url": data_url("seven")}}, {"type": "text", "text": "Second picture:"},
                 {"type": "image_url", "image_url": {"url": data_url("red")}}, {"type": "text", "text": "What is the main color of the second picture? Answer with one word."}])
