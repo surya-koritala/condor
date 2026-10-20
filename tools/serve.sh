@@ -2,6 +2,8 @@
 # The chat page and the API (OpenAI and Anthropic) on http://127.0.0.1:PORT (default 8080).
 #   tools/serve.sh [--fast | --best] [PORT]   precise mode by default; --fast or --best uses those experts (tools/download.sh --fast or --best)
 #   GLYD_CTX=65536 tools/serve.sh         the context in tokens (default 32768, up to 262144)
+#   GLYD_USERS=2 tools/serve.sh           requests answered at once (default 4, 1 to 8)
+#   GLYD_GPUS=0,1 tools/serve.sh          split the layers over two cards (the second card's VRAM holds more experts)
 set -euo pipefail
 HERE=$(cd "$(dirname "$0")" && pwd)
 . "${GLYD_QWEN:-$HOME/.glyd-qwen-3.8-flash}/env.sh"
@@ -14,4 +16,5 @@ case $F in
   *) PACK=$DIR/precise; MODE="--precise --layout i6 --hi i6";;
 esac
 [ -e "$PACK" ] || { echo "$PACK is missing: run tools/download.sh${F:+ $F} first." >&2; exit 1; }
-exec "$GLYD_ENGINE" qwenserve "$DIR/model" "$PACK" $MODE --ctx "${GLYD_CTX:-32768}" --port "${1:-8080}" --page "$HERE"
+exec "$GLYD_ENGINE" qwenserve "$DIR/model" "$PACK" $MODE --ctx "${GLYD_CTX:-32768}" --port "${1:-8080}" --page "$HERE" \
+  ${GLYD_USERS:+--users "$GLYD_USERS"} ${GLYD_GPUS:+--gpus "$GLYD_GPUS"}
