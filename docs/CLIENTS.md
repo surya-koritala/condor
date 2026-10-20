@@ -108,11 +108,12 @@ If you try one, tell me how it went in an issue. This list is tracked in
 
 ## Things that will trip up agent frameworks
 
-- One request at a time. Others wait their turn and are answered one after another, in the order they came. A streamed request
+- Up to 4 requests at once (`GLYD_USERS=N tools/serve.sh`, 1 to 8), each streaming from the start; total speed stays about one
+  user's, so four agents each see a quarter of it. Past N, requests wait their turn in the order they came: a streamed request
   that is waiting gets its headers within a second and then a `: waiting` comment line every second (Anthropic API: a `ping`
   event), so client read timeouts don't fire; the official SDKs skip these. A client that gives up while waiting is dropped
-  before its prompt is read. (These two are in the next release; in v0.1.1 a waiting request gets nothing until its turn, so
-  give the client a long timeout.) `tests/test_concurrent.py` checks this.
+  before its prompt is read. A new long prompt pauses the other streams while it is read. `tests/test_concurrent.py` and
+  `tests/test_parallel.py` check this.
 - Context is 32,768 tokens by default. Agent prompts with many tool definitions get long fast; start the server with a bigger context
   (`GLYD_CTX=65536 tools/serve.sh`, up to 262144) if you need it.
 
