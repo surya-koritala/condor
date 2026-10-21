@@ -8,6 +8,10 @@ compressed weights. OpenAI- and Anthropic-compatible APIs, a chat page, MCP. Fre
 The model wrote that game in one prompt on my 4080 SUPER, unedited. 3 of 6 tries were playable in precise mode; all 6 are in
 [examples/star-drift](examples/star-drift), broken ones included.
 
+**v0.2.4** (2026-10-21): precise and best are closer to the original (KL vs bf16 0.22 -> 0.15 and 0.165 -> 0.12; new downloads
+`precise-v2/` and `best-v2/`, `./setup.sh` fetches them), long prompts are read faster (fast: a 4K prompt's first token 1.7 -> 1.3 s),
+and a named `tool_choice` gets one call. Details in the [CHANGELOG](CHANGELOG.md).
+
 ## How it works, in short
 
 - The engine knows which experts the model routes to. The busy ones sit on the GPU, the rest in RAM; the CPU computes the misses while
@@ -51,8 +55,8 @@ don't publish comparisons myself.
 - 32 GB+ RAM. Precise and best want 64 GB; fast is the mode for 32 GB.
 - A decent CPU. Experts that miss the GPU cache run on it, so it matters about as much as the GPU: a 16-core 7950X3D does a pass in
   ~16 ms, an 8-core Zen 2 with DDR4 in ~70 ms.
-- ~90 GB of free disk (73 GB for fast, 96 GB for best), on an SSD.
-- Linux x86-64 (tested on Ubuntu 22.04 and 24.04) or Windows 10/11 x64. WSL untested.
+- ~90 GB of free disk (73 GB for fast, 97 GB for best), on an SSD.
+- Linux x86-64 (tested on Ubuntu 22.04, 24.04 and 26.04) or Windows 10/11 x64 (tested on Windows Server 2022). WSL untested.
 
 12 GB cards and 32 GB of RAM: measured on my 4080 held back to those sizes, fast mode does about 145 tok/s on a short prompt. A 3060
 has half the 4080's bandwidth, so expect roughly half that. Not yet run on a real 12 GB card.
@@ -60,6 +64,17 @@ has half the 4080's bandwidth, so expect roughly half that. Not yet run on a rea
 Two NVIDIA cards: `GLYD_GPUS=0,1 tools/serve.sh` splits the layers over them and the second card's VRAM holds more experts. Checked
 on 2x4090: the same output as one card, byte for byte, 189 vs 186 tok/s there (one 4090 already holds most experts). Two 12-16 GB
 cards should gain more; not yet run on real ones.
+
+Other cards, fast mode, measured on rented machines right after install (first token / writing speed, short prompt):
+
+```
+RTX 5090   0.13 s / 175 tok/s
+RTX 4090   0.39 s / 116 tok/s
+RTX 3090   0.51 s / 72 tok/s
+```
+
+Those machines' RAM read 27-65 GB/s (this 4080 desktop: 70), which shows on long prompts; full table in
+[#3](https://github.com/surya-koritala/condor/issues/3). Your card's numbers are welcome there.
 
 ## Install
 
@@ -78,9 +93,9 @@ git clone https://github.com/surya-koritala/condor; cd condor
 powershell -ExecutionPolicy Bypass -File setup.ps1
 ```
 
-`tools\download.ps1` and `tools\serve.ps1` (`-Fast`, `-Best`) are the twins of the `.sh` scripts. Tested on one Windows machine so
-far (an AWS L4, 64 GB RAM): clean install, `tests/` passing, 47 tok/s chat in fast mode (the L4 has 40% of a 4080's
-bandwidth). Not yet tested on a GeForce card under Windows or in WSL2.
+`tools\download.ps1` and `tools\serve.ps1` (`-Fast`, `-Best`) are the twins of the `.sh` scripts. Tested on AWS L4 machines (Windows
+Server 2022, 64 GB RAM, only NVIDIA's driver installed): clean install and `tests/` passing in fast and precise mode; about 40 tok/s
+chat in fast mode on that 8-core machine (the L4 has 40% of a 4080's bandwidth). Not yet tested on a GeForce card under Windows or in WSL2.
 
 With an AI coding assistant: `Set up https://github.com/surya-koritala/condor on this PC - follow docs/AI_SETUP.md`.
 
