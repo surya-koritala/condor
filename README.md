@@ -23,23 +23,23 @@ Details: [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md).
 RTX 4080 SUPER 16 GB, Ryzen 9 7950X3D, 64 GB RAM, Ubuntu 26.04. Greedy, thinking off, `bench/compare.py`.
 
 ```
-                                     precise         best            fast (v0.2.2)
-experts, avg bits/weight             ~3.0            ~3.4            ~2.0
-attention + rest                     6 bit           6 bit           4-5 bit
-download                             82 GB           89 GB           66 GB
-KL divergence vs bf16 (wikitext-2)   0.22            0.165           0.39
+                                     precise             best                fast
+experts, avg bits/weight             ~2.9                ~3.4                ~2.0
+attention + rest                     6 bit               6 bit               4-5 bit
+download                             82 GB               90 GB               66 GB
+KL divergence vs bf16 (wikitext-2)   0.15                0.12                0.39
 
-writing, short / 4K / 30K prompt     118 / 110 / 96  104 / 92 / 97   124 / 116 / 125 tok/s
-greedy, short prompt (best case)     ~130 tok/s      ~105 tok/s      ~169 tok/s
-read a 30K-token prompt              7.5 s           7.5 s           7.4 s
+first token, short / 4K / 30K        0.26 / 1.9 / 7.3 s  0.33 / 2.1 / 7.4 s  0.16 / 1.3 / 7.5 s
+writing, short / 4K / 30K prompt     91 / 86 / 91        79 / 71 / 76        113 / 115 / 131 tok/s
 
-GSM8K   (150 q, Inspect AI)          148/150         149/150         149/150
-MMLU-Pro (150 q, Inspect AI)         126/150         128/150         121/150
+GSM8K   (150 q, Inspect AI)          148/150             147/150             149/150
+MMLU-Pro (150 q, Inspect AI)         127/150             131/150             121/150
 ```
 
-Fast was measured on 2026-10-19 on this build; precise and best in October's earlier runs (v0.2.0, v0.2.1). GSM8K is a sanity check that
-compression didn't break reasoning; MMLU-Pro says more. Logs in [results/](results), scripts in
-[bench/](bench). Also tested on a cloud A10 (24 GB) and, on Windows, an L4 (24 GB).
+Speed: v0.2.4's build, 2026-10-21, the median of three runs each, nothing else on the computer. GSM8K and MMLU-Pro: precise and best
+on that build the same night, fast on 2026-10-19 (its experts are unchanged). Run to run, writing speed moves about 5-10% here (fast
+measured 124 tok/s on a short prompt on 2026-10-19). GSM8K is a sanity check that compression didn't break reasoning; MMLU-Pro says
+more. Logs in [results/](results), scripts in [bench/](bench). Also tested on a cloud A10 (24 GB) and, on Windows, an L4 (24 GB).
 
 Your own machine: `tools/bench.sh` (about 5 min) prints a block to paste into a "Bench result" issue. To compare with what you run now,
 `bench/compare.py` runs the same prompts and questions against any OpenAI-compatible server ([bench/README.md](bench/README.md)); I
@@ -86,10 +86,10 @@ With an AI coding assistant: `Set up https://github.com/surya-koritala/condor on
 
 ## Modes
 
-- **precise** (default): the one for code; long programs come out right far more often.
-- **best**: closest to the original (KL 0.165), about 10% slower, 7 GB more; 64 GB of RAM.
-- **fast**: 15-20% quicker than precise, 66 GB, runs with 32 GB of RAM. v0.2.2 packs its experts a new way at the same size: KL
-  0.53 -> 0.39, top-1 agreement with the original 79% -> 83%. Two of the 19 tool-call tests in `tests/` fail with it (see the CHANGELOG).
+- **precise** (default): the one for code; long programs come out right far more often. v0.2.4: most experts at 3 bits, KL 0.22 -> 0.15.
+- **best**: closest to the original (KL 0.12), a little slower than precise, 8 GB more; 64 GB of RAM.
+- **fast**: quicker than precise, 66 GB, runs with 32 GB of RAM. KL 0.39, top-1 agreement with the original 83%. One of the 19
+  tool-call tests in `tests/` can fail with it (the 12-round tool loop overruns now and then).
 
 Switch: `tools/download.sh --best` (or `--fast`), then `tools/serve.sh --best`. No flag means precise.
 

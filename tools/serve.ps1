@@ -11,6 +11,8 @@ $dir = if ($env:GLYD_HF) { $env:GLYD_HF } else { Join-Path $env:GLYD_QWEN 'hf' }
 if ($Fast) { $pack = Join-Path $dir 'fast'; $mode = @(); $f = ' -Fast' }
 elseif ($Best) { $pack = Join-Path $dir 'best'; $mode = @('--no-side', '--layout', 'i6', '--hi', 'i6'); $f = ' -Best' }
 else { $pack = Join-Path $dir 'precise'; $mode = @('--precise', '--layout', 'i6', '--hi', 'i6'); $f = '' }
+# (the 3- and 4-bit experts are precise-v2 and best-v2: those where downloaded, else the earlier ones)
+if (-not $Fast -and (Test-Path "$pack-v2")) { $pack = "$pack-v2" }
 if (-not (Test-Path $pack)) { throw "$pack is missing: run tools\download.ps1$f first." }
 $ctx = if ($env:GLYD_CTX) { $env:GLYD_CTX } else { '32768' }
 $extra = @()

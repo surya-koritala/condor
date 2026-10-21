@@ -20,8 +20,8 @@ if ([int]($drv -split '\.')[0] -lt 580) { throw "The NVIDIA driver is $drv; 580 
 if (-not (Test-Path (Join-Path $H 'bin\glyd-engine.exe'))) { Say 'Installing the engine (about 50 MB)'; & (Join-Path $PSScriptRoot 'tools\install.ps1') }
 . (Join-Path $H 'env.ps1')
 $def = if ($ram -lt 60) { 'fast' } else { 'precise' }
-$mode = Ask 'Mode: precise (accurate, good for code; wants 64 GB of RAM), best (more accurate still, about 10% slower, 7 GB more to download; 64 GB of RAM) or fast (quicker answers, a smaller download)' $def
-switch ($mode) { 'precise' { $part = 'precise'; $gb = 82 } 'best' { $part = 'best'; $gb = 89 } 'fast' { $part = 'fast'; $gb = 66 } default { throw 'Answer precise, best or fast.' } }
+$mode = Ask 'Mode: precise (accurate, good for code; wants 64 GB of RAM), best (more accurate still, a little slower, 8 GB more to download; 64 GB of RAM) or fast (quicker answers, a smaller download)' $def
+switch ($mode) { 'precise' { $part = 'precise-v2'; $gb = 82 } 'best' { $part = 'best-v2'; $gb = 90 } 'fast' { $part = 'fast'; $gb = 66 } default { throw 'Answer precise, best or fast.' } }
 if (-not (Test-Path (Join-Path $H 'hf\model\config.json')) -or -not (Test-Path (Join-Path $H "hf\$part"))) {
     if ($disk -lt $gb + 7) { throw "About $($gb + 7) GB of free disk is needed for $mode mode; $disk GB is free." }
     Say "Downloading the model (about $gb GB; it resumes if it stops)"
