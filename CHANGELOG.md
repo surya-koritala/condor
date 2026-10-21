@@ -5,10 +5,10 @@
 - Precise mode is closer to the original at the same size: most experts are at 3 bits a weight now (by how much each is used), the
   rest at 2. KL divergence vs the original bf16 (wikitext-2, 32 x 512): 0.22 -> 0.15, perplexity 1.076x -> 1.037x the original's. On
   the mixed text set (code, docs, five languages, an agent transcript), over the original's 64 most likely tokens: 0.180 -> 0.136,
-  top-1 87% -> 88%. Long documents: 0.073 -> 0.042. It writes about 10% slower than v0.2.3's precise (SPEED_PRECISE). Still 82 GB.
+  top-1 87% -> 88%. Long documents: 0.073 -> 0.042. It writes about 10% slower than v0.2.3's precise (same build, warm chat on the 4080 SUPER: 100 vs 112 tok/s; after a 4K prompt 75 vs 91). Still 82 GB.
 - Best mode too: 4 bits for the experts that carry about 80% of the work, 3 for the rest. wikitext-2 KL 0.165 -> 0.12 (perplexity
   1.052x -> 1.041x); mixed text set 0.146 -> 0.097, top-1 87.6% -> 89.9%; long documents 0.039 -> 0.028. About 5% slower than v0.2.3's
-  best (SPEED_BEST). 90 GB in all (was 89), 64 GB of RAM.
+  best (warm chat 98 vs 104 tok/s). 90 GB in all (was 89), 64 GB of RAM.
 - The new experts are new downloads, `precise-v2/` (45 GB) and `best-v2/` (53 GB): `./setup.sh` fetches them, or `tools/download.sh`
   (`--best`). The old `precise/` and `best/` folders can be deleted after. Engines before v0.2.4 keep using the old folders. On
   Windows, run `tools\install.ps1` after `git pull` first (setup.ps1 doesn't update the engine yet).
