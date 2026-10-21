@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.2.4
+
+- Precise mode is closer to the original at the same size: most experts are at 3 bits a weight now (by how much each is used), the
+  rest at 2. KL divergence vs the original bf16 (wikitext-2, 32 x 512): 0.22 -> 0.15, perplexity 1.076x -> 1.037x the original's. On
+  the mixed text set (code, docs, five languages, an agent transcript), over the original's 64 most likely tokens: 0.180 -> 0.136,
+  top-1 87% -> 88%. Long documents: 0.073 -> 0.042. It writes about 10% slower than v0.2.3's precise (SPEED_PRECISE). Still 82 GB.
+- Best mode too: 4 bits for the experts that carry about 80% of the work, 3 for the rest. wikitext-2 KL 0.165 -> 0.12 (perplexity
+  1.052x -> 1.041x); mixed text set 0.146 -> 0.097, top-1 87.6% -> 89.9%; long documents 0.039 -> 0.028. About 5% slower than v0.2.3's
+  best (SPEED_BEST). 90 GB in all (was 89), 64 GB of RAM.
+- The new experts are new downloads, `precise-v2/` (45 GB) and `best-v2/` (53 GB): `./setup.sh` fetches them, or `tools/download.sh`
+  (`--best`). The old `precise/` and `best/` folders can be deleted after. Engines before v0.2.4 keep using the old folders. On
+  Windows, run `tools\install.ps1` after `git pull` first (setup.ps1 doesn't update the engine yet).
+- Long prompts are read faster: a ~4K-token prompt's first token 1.70 -> 1.30 s in fast mode on the 4080 SUPER, 2.16 -> 1.84 s in
+  precise. The experts are copied to the GPU through buffers of the copier threads' own instead of the driver's slow path.
+- A named `tool_choice` gets one call to that tool (fast mode sometimes added a second one). Fast passes 18 of the 19 tool-call tests;
+  the 12-round loop still overruns now and then with fast's experts.
+- docs/CLIENTS.md: Hermes Agent needs a 64K context (`GLYD_CTX=65536`).
+- Tested on Windows Server 2022 on an AWS L4 with only NVIDIA's driver installed (no CUDA toolkit): install, download, every test in
+  `tests/`, the bench and the MCP server.
+
 ## 0.2.3
 
 - Images: PNG and JPEG in OpenAI `image_url` parts (base64, or a URL on a public host: the server won't fetch from this computer or
