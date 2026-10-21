@@ -101,6 +101,8 @@ before), so each round took about 0.25 s here.
 
 - Open WebUI, Hermes, Continue, Cline and LibreChat end to end. The official `openai` (3.31.0) and `anthropic` (1.14.0) Python
   SDKs stream tool calls fine, including while their request waits behind another one.
+- Hermes Agent needs at least 64K tokens of context (its quickstart says so); the server's default is 32K, so start it with
+  `GLYD_CTX=65536 tools/serve.sh` (`$env:GLYD_CTX = '65536'` on Windows).
 - `usage.prompt_tokens_details.cached_tokens` is not filled in; the reuse shows in the server's log only.
 
 If you try one, tell me how it went in an issue. This list is tracked in
