@@ -1,3 +1,5 @@
+> **Archived (2026-11-20).** Condor now lives in Glyd: [surya-koritala/Glyd/condor](https://github.com/surya-koritala/Glyd/tree/main/condor), under Apache-2.0. Its open issues moved there (label `condor`). Releases up to v0.2.4 stay downloadable here.
+
 # Condor
 
 Qwen3.8-Flash-Next (180B, MoE) on one 12-16 GB NVIDIA GPU with 32-64 GB of RAM, on Linux or Windows. Our own engine and our own
